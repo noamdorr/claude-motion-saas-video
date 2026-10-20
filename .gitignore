@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+examples/*/node_modules/
+examples/*/out/*.png
+examples/*/out/*.json
+*.skill

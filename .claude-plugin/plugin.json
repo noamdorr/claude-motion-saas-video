@@ -1,0 +1,13 @@
+{
+  "name": "motion-video",
+  "version": "0.1.0",
+  "description": "Claude Motion style SaaS launch videos from Claude Code: lucky (zero questions, gathers everything from your repo and site), grill (a short interview that captures your taste), build (storyboard to a scrubbable video.html and an MP4 render) and edit (change one word, number or timing, the rest stays).",
+  "author": {
+    "name": "Noam Dorr",
+    "url": "https://github.com/noamdorr"
+  },
+  "homepage": "https://github.com/noamdorr/claude-motion-saas-video",
+  "repository": "https://github.com/noamdorr/claude-motion-saas-video",
+  "license": "MIT",
+  "keywords": ["video", "motion", "claude-motion", "launch-video", "product-demo", "saas", "animation", "mp4", "remotion-alternative"]
+}

@@ -1,0 +1,21 @@
+{
+  "skill_name": "motion-video",
+  "evals": [
+    {
+      "id": 0,
+      "name": "quotacanary-mac-lucky",
+      "skill": "lucky",
+      "prompt": "I'm in the QuotaCanary repo (~/toppd). Make a launch video for QuotaCanary for Mac, the menu bar app under mac/. It's for the Product Hunt listing and a LinkedIn post, 16:9, around 25 seconds. Just make it, I'll react afterwards.",
+      "expected_output": "An MP4 (1920x1080, 20-30s) in a motion-video/ folder with brief.md (assumptions listed), storyboard.md and video.html; the Mac menu bar app shown as the product with real brand tokens (Canary Gold #FFC400, cream, Fraunces/Inter/JetBrains Mono), no em dashes, under ~4 words/second, a hook that is not 'Introducing'.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "reechee-d-app-grill",
+      "skill": "grill",
+      "prompt": "grill me on a launch video for the new Reechee app (the D shell: top nav, the opportunities feed, reveal, take-it-to-your-agent). 25 seconds, 16:9, for LinkedIn. I have screenshots and two reference videos.",
+      "expected_output": "Four interview rounds with prefilled defaults, a storyboard shown for approval with word counts, a scene-one clip checkpoint, then a full MP4 (1920x1080, ~25s) in motion-video/ with brief.md and storyboard.md; Reechee brand (pink #EE2E7F, deep purple #390854, Bricolage Grotesque + Inter), sample-universe names (Halvorsen Logistics, Priya Natarajan), no credit/price wording, under ~4 words/second.",
+      "files": ["answers.md", "reechee-screens/"]
+    }
+  ]
+}

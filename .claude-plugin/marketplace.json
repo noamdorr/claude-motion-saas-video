@@ -1,0 +1,23 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-motion-saas-video",
+  "owner": {
+    "name": "Noam Dorr",
+    "url": "https://github.com/noamdorr"
+  },
+  "metadata": {
+    "description": "Claude Motion style SaaS launch videos and quick demos from Claude Code. Two front doors: lucky (no questions) and grill (interview), one engine, MP4 out.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "motion-video",
+      "source": "./",
+      "description": "Claude Motion style SaaS launch videos from Claude Code: lucky (zero questions), grill (interview with taste capture), build (video.html to MP4) and edit (change one thing).",
+      "version": "0.1.0",
+      "author": { "name": "Noam Dorr", "url": "https://github.com/noamdorr" },
+      "category": "marketing",
+      "keywords": ["video", "claude-motion", "launch-video", "product-demo", "saas", "animation", "mp4"]
+    }
+  ]
+}

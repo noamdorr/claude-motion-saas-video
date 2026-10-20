@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motion video</title>
+<!-- Fonts: Google Fonts work from file:// in Chromium. Keep to two families. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- brand tokens: replace from brief.md ---------- */
+  :root {
+    --bg: #f6f4ee;          /* off-white canvas, never pure white */
+    --ink: #1d1a2b;
+    --muted: #6b6880;
+    --accent: #ee2e7f;
+    --accent-2: #390854;
+    --card: #ffffff;
+    --font-display: "Bricolage Grotesque", sans-serif;
+    --font-ui: "Inter", sans-serif;
+    --radius: 22px;
+    --shadow: 0 30px 80px -20px rgba(30, 20, 60, .25), 0 8px 24px -12px rgba(30, 20, 60, .18);
+  }
+  html, body { margin: 0; background: #111; }
+  [data-stage] { position: relative; overflow: hidden; background: var(--bg); color: var(--ink); font-family: var(--font-ui); }
+  [data-scene] { display: none; will-change: transform, opacity; }
+  .cam { position: absolute; inset: 0; }
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+
+  /* ---------- type ---------- */
+  .h1 { font-family: var(--font-display); font-weight: 700; font-size: 104px; line-height: 1.02; letter-spacing: -0.03em; max-width: 1400px; }
+  .h2 { font-family: var(--font-display); font-weight: 600; font-size: 64px; line-height: 1.08; letter-spacing: -0.02em; }
+  .eyebrow { font: 500 24px/1 var(--font-ui); letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+  .w { display: inline-block; will-change: transform, opacity; }
+  .accent { color: var(--accent); }
+
+  /* ---------- UI card: cardstock floating over the canvas ---------- */
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 36px 40px; width: 920px; box-sizing: border-box; text-align: left; }
+  .row { display: flex; align-items: center; gap: 18px; padding: 18px 0; border-top: 1px solid #ece9e2; font-size: 26px; }
+  .row:first-child { border-top: 0; }
+  .badge { font: 600 18px/1 var(--font-ui); padding: 8px 12px; border-radius: 999px; background: #fdecf3; color: var(--accent); letter-spacing: .04em; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: #d7d3ca; }
+  .grow { flex: 1; }
+  .num { font-variant-numeric: tabular-nums; color: var(--muted); }
+
+  /* ---------- cursor ---------- */
+  .cursor { position: absolute; left: 0; top: 0; width: 36px; height: 36px; pointer-events: none; z-index: 10; }
+  .cursor svg { display: block; filter: drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
+
+  /* ---------- CTA ---------- */
+  .cta { display: inline-flex; align-items: center; gap: 14px; margin-top: 44px; padding: 26px 44px; border-radius: 999px; background: var(--accent); color: #fff; font: 600 32px/1 var(--font-ui); }
+  .logo { font-family: var(--font-display); font-weight: 700; font-size: 44px; letter-spacing: -0.02em; }
+  .typing::after { content: ""; display: inline-block; width: 3px; height: 1em; background: currentColor; margin-left: 3px; vertical-align: -0.1em; }
+</style>
+</head>
+<body>
+<div data-stage>
+
+  <!-- Scene 1: the hook. One line, the pain or the result. -->
+  <section data-scene="hook">
+    <div class="center">
+      <div class="eyebrow">Every day</div>
+      <div class="h1" data-words>Your buyers are complaining about your competitor.</div>
+    </div>
+  </section>
+
+  <!-- Scene 2: the product, as a card in space. One idea per card, 15 to 30 words. -->
+  <section data-scene="product">
+    <div class="cam">
+      <div class="center">
+        <div class="h2" style="margin-bottom:36px" data-words>And now you hear them first.</div>
+        <div class="card" data-card>
+          <div class="row"><span class="dot"></span><span class="grow">Halvorsen Logistics switched CRM, support was slow</span><span class="badge">Severe</span></div>
+          <div class="row"><span class="dot"></span><span class="grow">Tanaka Precision Tools, pricing jumped 40%</span><span class="badge">New</span></div>
+          <div class="row"><span class="dot"></span><span class="grow">Lindqvist Marine, reporting is a mess</span><span class="num" data-format="0">0</span></div>
+        </div>
+      </div>
+      <div class="cursor"><svg viewBox="0 0 24 24" width="36" height="36"><path d="M4 2l16 9-7 2-3 7z" fill="#111" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+    </div>
+  </section>
+
+  <!-- Scene 3: the close. Logo, one promise, one action. -->
+  <section data-scene="cta">
+    <div class="center">
+      <div class="logo">Acme</div>
+      <div class="h2" style="margin-top:28px" data-words>Hear the complaint. Make the call.</div>
+      <div class="cta"><span data-text="acme.io/start" data-cursor>acme.io/start</span></div>
+    </div>
+  </section>
+
+</div>
+
+<script src="./motion.js"></script>
+<script>
+// Everything below is a pure function of time. Scene-local seconds. Ease names live in Motion.EASE.
+defineVideo({
+  width: 1920, height: 1080, fps: 30,
+  scenes: [
+    {
+      id: "hook", dur: 4,
+      tracks: {
+        ".eyebrow": [{ at: 0, opacity: 0, y: 14 }, { at: 0.6, opacity: 1, y: 0, ease: "outQuint" }],
+        ".h1 .w": { stagger: 0.07, at: 0.35, dur: 0.7, from: { opacity: 0, y: 36, blur: 6 }, to: { opacity: 1, y: 0, blur: 0 }, ease: "outQuint" },
+        ".h1 .w:nth-child(n+6)": [{ at: 0, color: "#1d1a2b" }, { at: 2.4, color: "#1d1a2b" }, { at: 2.9, color: "#ee2e7f", ease: "outCubic" }],
+      },
+    },
+    {
+      id: "product", dur: 7, transition: { type: "push", dur: 0.6 },
+      // Camera: slow push toward the card, then a hero crop on the first row when the cursor lands.
+      camera: [{ at: 0, scale: 1 }, { at: 3.2, scale: 1.04, ease: "inOutCubic" }, { at: 4.8, scale: 1.18, x: 0, y: 40, ease: "inOutQuint" }],
+      tracks: {
+        ".h2 .w": { stagger: 0.06, at: 0.1, dur: 0.6, from: { opacity: 0, y: 24 }, to: { opacity: 1, y: 0 }, ease: "outQuint" },
+        ".card": [{ at: 0.3, opacity: 0, y: 60, scale: 0.96 }, { at: 1.1, opacity: 1, y: 0, scale: 1, ease: "springSoft" }],
+        ".row": { stagger: 0.18, at: 0.9, dur: 0.6, from: { opacity: 0, x: -24 }, to: { opacity: 1, x: 0 }, ease: "outQuint" },
+        ".num": [{ at: 1.6, count: 0 }, { at: 2.6, count: 128, ease: "outCubic" }],
+        ".row:first-child .badge": [{ at: 4.6, scale: 1 }, { at: 4.75, scale: 1.18, ease: "outCubic" }, { at: 5.1, scale: 1, ease: "spring" }],
+        // The cursor glides in on an eased arc and clicks the Severe badge. Coordinates are stage pixels.
+        ".cursor": [
+          { at: 2.2, opacity: 0, x: 1500, y: 900 },
+          { at: 2.5, opacity: 1, x: 1500, y: 900 },
+          { at: 4.4, target: ".row:first-child .badge", ease: "inOutQuint" },
+          { at: 4.6, scale: 1 }, { at: 4.7, scale: 0.82, ease: "outCubic" }, { at: 4.9, scale: 1, ease: "outCubic" },
+        ],
+      },
+    },
+    {
+      id: "cta", dur: 4.5, transition: { type: "zoom", dur: 0.6 },
+      tracks: {
+        ".logo": [{ at: 0, opacity: 0, scale: 0.9 }, { at: 0.7, opacity: 1, scale: 1, ease: "springSoft" }],
+        ".h2 .w": { stagger: 0.06, at: 0.4, dur: 0.6, from: { opacity: 0, y: 20 }, to: { opacity: 1, y: 0 }, ease: "outQuint" },
+        ".cta": [{ at: 1.1, opacity: 0, y: 24 }, { at: 1.7, opacity: 1, y: 0, ease: "outQuint" }],
+        ".cta span": [{ at: 1.7, typed: 0 }, { at: 2.6, typed: 1, ease: "linear" }],
+      },
+    },
+  ],
+});
+</script>
+</body>
+</html>
