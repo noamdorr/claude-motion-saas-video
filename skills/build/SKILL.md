@@ -48,6 +48,9 @@ show it to them in one message before building.
    `--scale 2` for a supersampled master. For 9:16 or 1:1, change `width`/`height` in
    `defineVideo` and re-lay out the scenes; see `references/motion-grammar.md` "Aspect ratios".
 8. **Deliver**: the MP4 path, a poster still, and three lines on what you assumed or left out.
+   `node bundle.mjs` writes `out/video.bundle.html`, one file with the runtime and images inlined,
+   which pastes into claude.ai as an artifact (and opens in Claude Motion's editor on plans that
+   have it) and feeds the community Stage exporters.
    Open the MP4 for the user when you can (`open out/<name>.mp4` on macOS). Commit the folder.
 
 ## Non-negotiables
@@ -77,5 +80,5 @@ show it to them in one message before building.
 
 - `scripts/scaffold.mjs <dir>`: copies the project template and installs dependencies.
 - `assets/project-template/`: `motion.js` (runtime), `render.mjs`, `check-copy.mjs`,
-  `preview.mjs`, `video.html` (worked starter), `package.json`.
+  `preview.mjs`, `bundle.mjs`, `video.html` (worked starter), `package.json`.
 - `assets/brief-template.md`, `assets/storyboard-template.md`.
