@@ -23,10 +23,14 @@ defineVideo({
 ```
 
 - `id` matches `<section data-scene="hook">`. One section per scene, absolutely positioned over the
-  stage by the runtime. Put scene content inside `<div class="cam">` if the scene uses a camera.
+  stage by the runtime. Sections carry no `id` attribute: style and select them with
+  `[data-scene="hook"]`, not `#hook`. Put scene content inside `<div class="cam">` if the scene uses a camera.
 - `start` defaults to the previous scene's end; give `dur` or `end`.
-- `transition` describes how THIS scene enters and how the PREVIOUS scene leaves, over `dur`
-  seconds before `start`. Types: `cut` (default), `fade`, `push` (incoming rises, outgoing drifts up
+- `transition` describes how THIS scene enters and how the PREVIOUS scene leaves. Both happen in
+  the `dur` seconds before this scene's `start`: the previous scene leaves during
+  `[start - dur, start]` and this one enters in the same window, so on the grid line the new
+  scene is fully in. Plan the outgoing scene's last hold to end `dur` before its end. An optional
+  `ease` (any easing name) shapes the window; `fade` is a symmetric cross-fade by default. Types: `cut` (default), `fade`, `push` (incoming rises, outgoing drifts up
   and fades), `zoom` (outgoing flies into the lens, incoming settles from behind: the Z-axis
   push-through), `slide` (whip to the next panel), `wipe` (clip reveal from the left).
 - Times inside `tracks` and `camera` are scene-local seconds, so retiming a scene never breaks it.
@@ -83,14 +87,26 @@ function `t => ...` instead.
 ```js
 camera: [ { at: 0, scale: 1 }, { at: 3, scale: 1.12, x: 120, y: 40, ease: "inOutCubic" } ]
 ```
-Applied to the scene's `.cam` element (or the scene). `x`,`y` are where the camera looks in stage
-pixels relative to center; `scale` is the zoom. Cursors inside `.cam` move with the camera, and
-`target` coordinates still land because both are measured in the same space.
+The first camera keyframe gets `x: 0, y: 0, scale: 1` for any prop it does not name, so a prop
+that first appears later eases from neutral (not from that later value held since the start).
+Element tracks do not get this: their first keyframe is the initial state, so name every prop
+you will animate in the first keyframe. Applied to the scene's `.cam` element (or the scene). `x`,`y` are where the camera looks in stage
+pixels relative to center; `scale` is the zoom. A keyframe may say `target: ".sel"` instead of
+`x`,`y` to look at that element's center. The camera is clamped to the stage by default
+(`|x| <= W/2 * (1 - 1/scale)`, same for `y`), so a crop never shows bare canvas past the edge; set
+`cameraClamp: false` on the scene to allow it. A hero crop on something near an edge therefore
+cannot center it; put the object nearer the middle of the stage instead (see ui-cards.md on
+menu bars). Cursors inside `.cam` move with the camera, and `target` coordinates still land
+because both are measured in the same space.
 
 ## Markup helpers
 
 - `data-words` on a text element wraps each word in `<span class="w">` at init, for staggers.
-  `data-chars` does the same per character (`<span class="c">`).
+  Nested elements survive: `<span class="accent">first</span>` inside a `data-words` headline
+  keeps its class and gets a `.w` inside it. `data-chars` does the same per character
+  (`<span class="c">`).
+- `data-chrome` on furniture (a fake menu bar, a window title, an OS clock) excludes its words
+  from the copy budget in `check-copy.mjs`. Copy the viewer is meant to read is never chrome.
 - `data-stage` marks the stage element (one per file). Its size is set from `defineVideo`.
 - `data-card` marks a product card for the copy checker's per-card word budget.
 - `data-format`, `data-text`, `data-cursor`, `data-hot` as described above.
@@ -109,3 +125,11 @@ Without `?__render=1` the runtime wraps the stage in a letterboxed player: Space
 Left and Right step one frame (Shift for one second), Home rewinds, digits 1 to 9 jump to scenes,
 the scrubber seeks. Run `node preview.mjs` and open `http://localhost:4800/video.html`; opening the
 file directly also works in Chrome.
+
+## Track collisions
+
+Two tracks that write the same prop on the same element do not merge: the later one wins at
+every time, including before its first keyframe, so a late "dim rows 2 and 3" track with
+`opacity: 1` at 3.5s makes those rows visible from 0s and cancels their entrance. The runtime
+warns in the console (`two tracks write "opacity" on ...`). Fold the later change into the same
+track as extra keyframes.

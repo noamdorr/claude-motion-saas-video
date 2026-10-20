@@ -11,7 +11,10 @@ Screenshots are your reference for fidelity.
    "a menu bar popover with balances, one is low", "a modal with a prompt to copy".
 3. Rebuild only what carries that idea: the container, 2 to 4 rows or fields, one status element,
    one control the cursor will touch. Drop navigation, filters, footers, secondary buttons.
-4. Match the product's real type, radius, spacing, status colors and icon weight. Read them from
+4. Match the product's real type, radius, spacing, status colors and icon weight. Inside a
+   product card, fidelity beats the film's adjectives: a "warm" brief does not round the
+   product's 12px corners to 24px. The canvas, headlines and the floating card's outer shadow
+   carry the adjectives; the UI inside stays true. Read them from
    the repo (`globals.css`, tailwind config, design tokens, the component source) rather than
    eyeballing the screenshot. Wrong radius or wrong gray is the first thing a founder notices.
 5. Use real feature names and real labels for the things the user would recognize; shorten
@@ -25,6 +28,11 @@ Screenshots are your reference for fidelity.
   system font (`-apple-system, "SF Pro", Inter`), native control sizes. For a menu bar app, show
   the status bar strip (the icon among a few neutral ones) and the popover anchored under it with
   a small notch. Keep the popover at real size and let the camera do the zoom.
+- Menu bar apps: the status bar strip may run the full width when it is the product's home,
+  and it is the one exception to "never full-bleed". For hero crops on the icon, put the strip
+  on a desktop slab (a rounded screen-shaped card with the strip at its top, sitting in the
+  middle third of the stage) rather than at the stage's top edge: the camera is clamped to the
+  stage, so an icon at the edge cannot be centered in a crop.
 - Mobile: a 24px-radius phone with a 1px inner border and a status bar; 390px wide at 1x, scaled
   by the camera.
 - Notifications: the platform's real shape (macOS: a white rounded rectangle with an app icon on

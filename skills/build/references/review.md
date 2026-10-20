@@ -46,9 +46,19 @@ the handoff say plainly that stills and the sheet were checked and the motion wa
 | the close feels abrupt | hold under 2s or something still animating | end all tracks 2s before the end |
 | the render and the preview differ | non-deterministic code | remove `setTimeout`, rAF state, CSS animations; see gotchas |
 
+## Pass 4: the jerk check
+
+"Smooth" is checkable. `node render.mjs --jumps out/video.mp4` lists every frame whose scene-change
+score is above 0.06 (ffmpeg's measure of how much the picture changed from the previous frame).
+Your intended cuts appear there and should be the only entries. Anything else is a pop, an
+element landing late, or a transition that does not overlap; find its time, render the still on
+both sides, and fix the keyframe. Report the result in the handoff as "N jumps, all at scene
+cuts" or name the stray one.
+
 ## What "done" looks like
 
 - `check-copy.mjs` clean (warnings read and either fixed or defended in the handoff)
+- `--jumps` shows only the intended cuts
 - sheet with no empty or doubled frames, product visible, one family of style
 - every click still verified
 - the final MP4 plays in QuickTime or Chrome, duration matches the storyboard, file under 10MB for a

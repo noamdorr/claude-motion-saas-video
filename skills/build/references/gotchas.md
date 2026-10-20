@@ -21,6 +21,9 @@
 - **Camera and transition on the same element.** Transitions transform the scene section; the
   camera transforms `.cam` inside it. Scenes with a camera need the `.cam` wrapper or the two
   transforms overwrite each other.
+- **A hero crop shows bare canvas, or refuses to center the object.** The camera is clamped
+  to the stage. Objects near an edge cannot be centered at any zoom; move the object toward the
+  middle (a desktop slab for menu bar strips), or accept the off-center crop.
 - **`target` finds the wrong element.** Targets resolve inside the cursor's own scene first, then
   the stage. Use a selector unique within the scene.
 - **Stagger over a nested selector.** `".h1 .w"` matches the words of every `.h1` in the scene in
@@ -35,3 +38,8 @@
   clip, not from a throttled tab.
 - **9:16 looks squashed.** You changed `width`/`height` without re-laying out. Each scene needs
   its own vertical layout; see the grammar's "Aspect ratios".
+- **An element is visible before its entrance, or an entrance is ignored.** Two tracks write the
+  same prop on that element; the later one wins at every time. Check the console for
+  `two tracks write`, and merge them into one keyframe list.
+- **The camera starts off-center.** You named `x`/`y` only in a later keyframe of an element
+  track (camera tracks are defaulted for you). Put the starting values in the first keyframe.

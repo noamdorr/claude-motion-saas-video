@@ -134,7 +134,7 @@ production credentials or real customer data to show anything, stop here and go 
 
 ### c. Mac and desktop apps
 
-- Look in the app's README, `scripts/` and build schemes for demo or fixture flags: `--demo`,
+- Look in the app's README, `scripts/` and build schemes for demo or fixture flags: `--demo`, `--snapshot`, `--screenshots`, `--render-scenes`, `--capture-dir`,
   `--design-preview`, `--fixtures`, `--capture-dir`, `DEMO_MODE`, a `ph-demo/` or `preview/`
   folder. These exist for exactly this job and give clean, fictional state.
 - If the app is installed and running, capture its window with `screencapture -l <window id>` or

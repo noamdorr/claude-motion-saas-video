@@ -31,7 +31,11 @@ Fewer than you think. A reference film the author approved by ear carries 117 wo
 - Product cards: 15 to 30 words. The idea of the screen (a name, a status, a phrase), not the
   real screen with every label. Real screens are built for people who already know the product.
 - Reading speed: three words per second. A headline of nine words needs a three-second hold after
-  its last word lands. `check-copy.mjs` enforces the total budget; you enforce the holds.
+  its last word lands. Budget: target four words per second of runtime; `check-copy.mjs` warns
+  above four and fails above four and a half. You enforce the holds.
+- The close carries the promise in six words or fewer when you write it. An approved tagline
+  the founder already uses (the site, the README, an earlier film) beats that rule at any length:
+  their words, not yours.
 - No price, credit or plan wording unless the brief says so. A launch video sells the idea.
 - No em dashes, no curly quotes, no "seamless", "effortless", "supercharge", "next level".
 - Plain, specific, present tense. "Hears the complaint. Finds the buyer." beats "Empowering teams
@@ -64,8 +68,10 @@ Slides pan. Films move in and out. Every proof scene gets a camera track:
   0.8s with `inOutQuint`, then hold. Pull back out only if the next idea needs the whole card.
 - Pull-out reveal: start at 1.3 on one row, pull to 1.0 to reveal the list. Good for "and here is
   everything it found".
-- Scene transitions on the Z axis (`zoom`) make the outgoing scene fly into the lens. Use it once,
-  on the Shift (the product arrives), and `push` or `cut` elsewhere.
+- Scene transitions on the Z axis (`zoom`) make the outgoing scene fly into the lens. Use it once.
+  The Shift (the product arrives) is the usual place; if your signature move is a push-through
+  somewhere else, the signature wins and the Shift takes a `push`. "Once" is the rule, not "on
+  the Shift".
 
 The viewer should rarely see a whole screen. They see the part the story is about.
 

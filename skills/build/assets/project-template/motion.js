@@ -171,8 +171,8 @@
   const TRANSITIONS = {
     cut: { in: () => ({ opacity: 1 }), out: () => ({ opacity: 1 }) },
     fade: {
-      in: (p) => ({ opacity: EASE.outCubic(p) }),
-      out: (p) => ({ opacity: 1 - EASE.inCubic(p) }),
+      in: (p) => ({ opacity: EASE.inOutCubic(p) }),
+      out: (p) => ({ opacity: 1 - EASE.inOutCubic(p) }),
     },
     // Incoming scene rises in while the outgoing scene drifts up and fades.
     push: {
@@ -216,37 +216,34 @@
     return video;
   }
 
+  // Wrap each word of the text nodes under el in <span class="w">, keeping nested elements
+  // (an accent <span> inside a headline survives; its words still get .w spans inside it).
+  function wrapWords(node, cls, perChar) {
+    for (const child of Array.from(node.childNodes)) {
+      if (child.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        const parts = perChar ? Array.from(child.textContent) : child.textContent.split(/(\s+)/);
+        for (const part of parts) {
+          if (!part) continue;
+          if (!perChar && /^\s+$/.test(part)) { frag.appendChild(document.createTextNode(" ")); continue; }
+          const span = document.createElement("span");
+          span.className = cls;
+          span.textContent = perChar && part === " " ? "\u00a0" : part;
+          frag.appendChild(span);
+        }
+        node.replaceChild(frag, child);
+      } else if (child.nodeType === 1) wrapWords(child, cls, perChar);
+    }
+  }
   function splitWords(root) {
-    root.querySelectorAll("[data-words]").forEach((el) => {
-      if (el.dataset.split) return;
-      const words = el.textContent.split(/\s+/).filter(Boolean);
-      el.textContent = "";
-      words.forEach((w, i) => {
-        const span = document.createElement("span");
-        span.className = "w";
-        span.textContent = w;
-        el.appendChild(span);
-        if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
-      });
-      el.dataset.split = "1";
-    });
-    root.querySelectorAll("[data-chars]").forEach((el) => {
-      if (el.dataset.split) return;
-      const chars = Array.from(el.textContent);
-      el.textContent = "";
-      chars.forEach((c) => {
-        const span = document.createElement("span");
-        span.className = "c";
-        span.textContent = c === " " ? " " : c;
-        el.appendChild(span);
-      });
-      el.dataset.split = "1";
-    });
+    root.querySelectorAll("[data-words]").forEach((el) => { if (!el.dataset.split) { wrapWords(el, "w", false); el.dataset.split = "1"; } });
+    root.querySelectorAll("[data-chars]").forEach((el) => { if (!el.dataset.split) { wrapWords(el, "c", true); el.dataset.split = "1"; } });
   }
 
   // Compile a track spec into { el, keyframes } entries.
   function compileTracks(root, specs, offset) {
     const out = [];
+    const seen = new Map(); // el -> Set(prop)
     for (const selector in specs || {}) {
       const spec = specs[selector];
       const els = selector === "self" ? [root] : Array.from(root.querySelectorAll(selector));
@@ -260,6 +257,11 @@
           kfs = [Object.assign({ at }, spec.from || {}), Object.assign({ at: at + (spec.dur != null ? spec.dur : 0.6), ease: spec.ease }, spec.to || {})];
         }
         kfs = kfs.slice().sort((a, b) => a.at - b.at);
+        const props = new Set(kfs.flatMap((k) => Object.keys(k).filter((p) => p !== "at" && p !== "ease" && p !== "target" && p !== "hot" && p !== "align")));
+        const prev = seen.get(el) || new Set();
+        for (const p of props) if (prev.has(p)) console.warn(`[motion] two tracks write "${p}" on`, el, `(selector ${selector}); the later one wins at every time, including before its first keyframe`);
+        props.forEach((p) => prev.add(p));
+        seen.set(el, prev);
         out.push({ el, kfs, offset: offset || 0, cache: {} });
       });
     }
@@ -281,7 +283,13 @@
       el.style.inset = "0";
       el.style.display = "none";
       s._tracks = compileTracks(el, s.tracks, 0);
-      s._camera = s.camera ? s.camera.slice().sort((a, b) => a.at - b.at) : null;
+      s._camera = s.camera ? s.camera.map((k) => Object.assign({}, k)).sort((a, b) => a.at - b.at) : null;
+      if (s._camera && s._camera.length) {
+        // A camera prop that first appears in a later keyframe eases from the neutral value,
+        // not from that keyframe's value held since t=0.
+        const first = s._camera[0];
+        for (const [k, v] of [["x", 0], ["y", 0], ["scale", 1]]) if (!(k in first) && !("target" in first)) first[k] = v;
+      }
       s._camEl = el.querySelector(".cam") || el;
       s._cache = {};
     }
@@ -304,7 +312,8 @@
   // Measured once at init with every scene shown and no transforms applied, in stage pixels.
   function resolveTargets(stage) {
     const all = [...video.scenes.flatMap((s) => s._tracks || []), ...video.globalTracks];
-    if (!all.some((t) => t.kfs.some((k) => k.target))) return;
+    const camScenes = video.scenes.filter((s) => s._camera && s._camera.some((k) => k.target));
+    if (!all.some((t) => t.kfs.some((k) => k.target)) && !camScenes.length) return;
     const shown = [];
     for (const [, el] of video.sceneEls) { shown.push([el, el.style.display]); el.style.display = "block"; el.style.visibility = "hidden"; }
     const sr = stage.getBoundingClientRect();
@@ -321,6 +330,19 @@
         const cy = (r.top + r.height * (k.align ? k.align[1] : 0.5) - sr.top) / sc;
         k.x = Math.round(cx - hot[0]);
         k.y = Math.round(cy - hot[1]);
+        delete k.target;
+      }
+    }
+    // Camera keyframes: { at, target: ".sel", scale } looks at the element's center.
+    for (const sc of camScenes) {
+      const root = video.sceneEls.get(sc.id);
+      for (const k of sc._camera) {
+        if (!k.target) continue;
+        const tgt = root.querySelector(k.target);
+        if (!tgt) { console.warn("[motion] camera target not found", k.target); continue; }
+        const r = tgt.getBoundingClientRect();
+        k.x = Math.round((r.left + r.width / 2 - sr.left) / sc - video.width / 2);
+        k.y = Math.round((r.top + r.height / 2 - sr.top) / sc - video.height / 2);
         delete k.target;
       }
     }
@@ -349,21 +371,24 @@
       const next = video.scenes[idx + 1];
       const ntr = next && next.transition && TRANSITIONS[next.transition.type] ? next.transition : null;
       const outDur = ntr && ntr.type !== "cut" ? (ntr.dur != null ? ntr.dur : 0.5) : 0;
-      // Visible window: a scene with a transition enters during [start - inDur, start], the outgoing one lingers.
+      // Visible window: a transition of dur d happens in the d seconds before the NEXT scene's
+      // start. The incoming scene enters during [start - d, start]; the outgoing scene leaves during
+      // [end - d, end] (its end IS the next start). At the grid line the new scene is fully in.
       const visStart = s._start - (idx === 0 ? 0 : inDur);
-      const visEnd = s._end + outDur;
-      const visible = t >= visStart && t < visEnd && !(idx === 0 && t < 0);
+      const visEnd = s._end;
+      const visible = t >= visStart && t < visEnd;
       if (!visible) { el.style.display = "none"; continue; }
       el.style.display = "block";
       const lt = t - s._start;
       // Container transition props
       let cprops = { opacity: 1, x: 0, y: 0, scale: 1 };
+      const easeOf = (tr3) => (tr3 && tr3.ease ? (typeof tr3.ease === "function" ? tr3.ease : EASE[tr3.ease] || EASE.linear) : EASE.linear);
       if (inDur > 0 && t < s._start) {
-        const p = clamp01((t - visStart) / inDur);
+        const p = easeOf(trIn)(clamp01((t - visStart) / inDur));
         Object.assign(cprops, TRANSITIONS[trIn.type].in(p, video));
         el.style.zIndex = 2;
-      } else if (outDur > 0 && t >= s._end) {
-        const p = clamp01((t - s._end) / outDur);
+      } else if (outDur > 0 && t >= s._end - outDur) {
+        const p = easeOf(ntr)(clamp01((t - (s._end - outDur)) / outDur));
         Object.assign(cprops, TRANSITIONS[ntr.type].out(p, video));
         el.style.zIndex = 1;
       } else {
@@ -375,6 +400,10 @@
       // Camera
       if (s._camera) {
         const cam = Object.assign({ x: 0, y: 0, scale: 1 }, evalKeyframes(s._camera, lt));
+        if (s.cameraClamp !== false && cam.scale > 1) {
+          const mx = (video.width / 2) * (1 - 1 / cam.scale), my = (video.height / 2) * (1 - 1 / cam.scale);
+          cam.x = Math.max(-mx, Math.min(mx, cam.x)); cam.y = Math.max(-my, Math.min(my, cam.y));
+        }
         s._camEl.style.transformOrigin = "50% 50%";
         s._camEl.style.transform = `scale(${cam.scale}) translate(${-cam.x}px, ${-cam.y}px)`;
       }

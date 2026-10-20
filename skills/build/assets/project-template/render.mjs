@@ -8,6 +8,7 @@
  *   node render.mjs --sheet --out out/sheet.png       # 12-frame contact sheet for review
  *   node render.mjs --from 4 --to 9 --out out/scene2.mp4   # a slice
  *   node render.mjs --scale 2                          # 2x supersampled (4K from a 1080p stage)
+ *   node render.mjs --jumps out/video.mp4 [--threshold 0.06]   # list abrupt frame changes (jerk check)
  *
  * Deterministic: every frame comes from window.__seek(t). Needs Node 18+, playwright and ffmpeg
  * (system ffmpeg or the ffmpeg-static package). First run may download Chromium (~150MB) unless
@@ -21,6 +22,7 @@ import { tmpdir } from "node:os";
 import { createRequire } from "node:module";
 
 const args = parseArgs(process.argv.slice(2));
+if (args.jumps) { jumps(args.jumps, parseFloat(args.threshold || "0.06")); process.exit(0); }
 const inPath = resolve(args.in || "video.html");
 const still = args.still != null ? parseFloat(args.still) : null;
 const sheet = !!args.sheet;
@@ -118,6 +120,22 @@ rmSync(frameDir, { recursive: true, force: true });
 log(`mp4 -> ${outPath}`);
 
 // ---------- helpers ----------
+// Jerk check: ffmpeg's scene-change score per frame. Intended cuts score high; anything else above
+// the threshold is a pop, a late entrance or a transition that does not overlap.
+function jumps(file, threshold) {
+  const ff = findFfmpeg();
+  const r = spawnSync(ff, ["-i", resolve(file), "-vf", `select='gt(scene,${threshold})',metadata=print:file=-`, "-an", "-f", "null", "-"], { encoding: "utf8", maxBuffer: 64e6 });
+  const lines = (r.stdout || "").split("\n");
+  const hits = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/pts_time:([\d.]+)/);
+    const sc = (lines[i + 1] || "").match(/lavfi\.scene_score=([\d.]+)/);
+    if (m && sc) hits.push({ t: parseFloat(m[1]), score: parseFloat(sc[1]) });
+  }
+  if (!hits.length) { console.log(`[jumps] no frame change above ${threshold}; the cut is smooth by this measure`); return; }
+  console.log(`[jumps] ${hits.length} frame(s) above ${threshold} (intended cuts included):`);
+  for (const h of hits) console.log(`  ${h.t.toFixed(2)}s  score ${h.score.toFixed(3)}`);
+}
 async function newPage(browser, url, w, h, dsf) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dsf, reducedMotion: "no-preference" });
   const page = await ctx.newPage();

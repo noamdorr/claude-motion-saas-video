@@ -53,6 +53,13 @@ Before the first question, read the product. This is what makes the questions sh
 If the product is not obvious from the working directory, the first question of Round 1 asks for
 the repo path or the URL, and Step 0 runs after that answer.
 
+## When a reply contradicts something recorded
+
+A reply wins over the repo, the site and any memory, because it is the founder speaking now.
+But flag the conflict once, in one line, with the one-token swap: "You said Bricolage; the live
+app switched to Schibsted Grotesk in September. Using Bricolage; say the word to swap." Then
+move on. Silent compliance hides a mistake; re-asking wastes the round.
+
 ## Round 1: the job
 
 Why first: purpose, destination and length decide the scene count, the aspect and the word budget
@@ -66,6 +73,11 @@ them together ("LinkedIn feed, so sound off and 16:9 plus a 9:16 cut; correct me
 
 Open with the prefill line, for example: "I see you are Acme, the hero says 'Ship invoices in one
 click'. Is that still the pitch?"
+
+When the opening message already gives length, aspect and destination, Round 1 is mostly
+confirmations: fold them into one numbered line ("25s, 16:9, LinkedIn with sound off, confirmed?")
+and spend the remaining questions on the pitch, the audience and how this film relates to any
+earlier ones.
 
 ## Round 2: the idea and the proofs
 
@@ -99,12 +111,18 @@ Ask:
 
 Then analyse the links with this fallback chain, in order:
 
-1. If a `gemini` CLI is on the PATH or `GEMINI_API_KEY` is set, run the director's breakdown
-   prompt from `references/interview.md` on each link. You get a shot list, pacing, transitions,
-   type, color, and the one signature move.
-2. Otherwise, fetch each page for its title and description, and rely on the user's one-liners
+1. A breakdown that already exists in the repo (a `REFERENCE_*.md`, a retro, a handoff with a
+   shot list). The founder's own notes on a film beat any fresh analysis.
+2. Local source or frames of the reference (the film's own project folder, a rendered MP4 you can
+   sample with ffmpeg, a contact sheet). Read the frames; you can describe type, color, framing
+   and the signature move from them.
+3. A `gemini` CLI on the PATH or `GEMINI_API_KEY` in the environment: run the director's
+   breakdown prompt from `references/interview.md` on each link. You get a shot list, pacing,
+   transitions, type, color, and the one signature move. Skip this step when the session forbids
+   external calls or spending, and say so.
+4. Otherwise, fetch each page for its title and description, and rely on the user's one-liners
    plus the adjectives.
-3. Never claim to have watched a video you did not analyse. Say which path you took: "I could not
+5. Never claim to have watched a video you did not analyse. Say which path you took: "I could not
    watch these; I am working from your notes and the page titles." A false "I watched it" poisons
    every later taste decision.
 
@@ -157,7 +175,7 @@ Then send two things:
 
 Why a clip and not a still: stills say nothing about rhythm. Pace, easing and hold length are
 exactly what a founder reacts to, and they only show up in motion. Open both files for the user
-rather than only linking them.
+rather than only linking them (in an unattended run, skip the open and put the paths first).
 
 Ask one question: "Is this the feel? Yes, or what is off (faster, calmer, bigger type, different
 move)?" Map vague answers back to the grammar table: "too slow" means shorter holds and faster

@@ -24,8 +24,9 @@ mkdirSync(join(target, "out"), { recursive: true });
 for (const f of readdirSync(template)) {
   const src = join(template, f), dst = join(target, f);
   if (f === "video.html" && existsSync(dst)) { console.log(`keep   ${dst}`); continue; }
+  const existed = existsSync(dst);
   cpSync(src, dst, { recursive: true });
-  console.log(`${existsSync(dst) ? "write " : "copy  "} ${dst}`);
+  console.log(`${existed ? "update" : "copy  "} ${dst}`);
 }
 for (const [tpl, name] of [["brief-template.md", "brief.md"], ["storyboard-template.md", "storyboard.md"]]) {
   const dst = join(target, name);

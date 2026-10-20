@@ -13,7 +13,8 @@ film exists: vetoing an assumption takes seconds, answering an interview takes t
 
 ## 0. Say one line, then go
 
-Your first message in chat is exactly this, and you do not wait for a reply:
+Your first message in chat is exactly this, and you do not wait for a reply (write it even when
+no one is reading, for example in a subagent run; it is the record that the mode was chosen):
 
 > Lucky mode: no questions, I will gather everything from the repo and the site. Say 'grill me' any time for the guided version.
 
@@ -83,7 +84,10 @@ Defaults when nothing is found:
 
 - Aspect 16:9, length 25 seconds, destination LinkedIn feed, plays with sound off.
 - Canvas off-white (`#F7F6F2` or a light tint of the brand), ink from the product's text color.
-- UI font Inter. Display font: the site's heading font, else Bricolage Grotesque.
+- UI font Inter. Display font, in order: the brand's declared display face (brand docs, the
+  wordmark, an earlier approved film), then the site's heading font, then Bricolage Grotesque.
+- The close: the founder's approved tagline if one exists, at its own length; otherwise a promise
+  you write in six words or fewer.
 - The one idea: the homepage hero headline.
 - Music: none.
 
@@ -163,7 +167,8 @@ checkpoint is the delivery.
 ## 6. Deliver
 
 Open the MP4 for the user (`open motion-video/out/<name>.mp4` on macOS) rather than only printing
-the path. Then reply with:
+the path. In an unattended run (a subagent, a scheduled job) skip the open and put the paths and the
+sheet first in your report. Then reply with:
 
 - the MP4 path and the poster still path
 - three lines of what you assumed, the three that most change the film (usually the one idea, the
@@ -172,5 +177,7 @@ the path. Then reply with:
   for the guided version that starts from this brief."
 
 Commit only the `motion-video/` folder, on a branch if the repo is on its default branch, with a
-message that says it was made in lucky mode. If the repo has uncommitted changes of its own, leave
+message that says it was made in lucky mode. The template's `.gitignore` keeps `out/` out of
+the commit: the MP4 is reproducible from the source, and a video file in a product repo is a
+choice the owner makes, not you. If the repo has uncommitted changes of its own, leave
 them alone and commit only your folder's paths.
