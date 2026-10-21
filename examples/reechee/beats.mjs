@@ -18,7 +18,7 @@
  * `tolerance` frames from the nearest beat, with the beat to move to.
  */
 import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { resolve, basename } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const argv = process.argv.slice(2);
@@ -153,7 +153,7 @@ const result = await page.evaluate(async ({ b64, fps, bpmHint, priorWidth, harm,
   return { bpm: +bpm.toFixed(2), beat: +beat.toFixed(4), alternatives, beats, bars, barConfidence, kicks: kicksOut, drop, swells: swellsOut, hits: hitsOut, swell: { t: +swT.toFixed(2), rms: +(sw / win1).toFixed(3) }, duration: +duration.toFixed(2) };
 }, { b64: bytes.toString("base64"), fps, bpmHint: args.bpm ? parseFloat(args.bpm) : 0, priorWidth: parseFloat(args["prior-width"] || "0.5"), harm: parseFloat(args.harm || "0"), maxSeconds: parseFloat(args.max || "60") });
 await browser.close();
-result.file = file; result.fps = fps;
+result.file = basename(file); result.fps = fps;
 writeFileSync(out, JSON.stringify(result, null, 2));
 console.log(`[beats] ${result.bpm} BPM (${result.beat}s per beat), ${result.beats.length} beats, ${result.bars.length} bars, ${result.duration}s -> ${out}`);
 if (result.alternatives.length) console.log(`[beats] other plausible tempos: ${result.alternatives.join(", ")} BPM (pass --bpm N to pin one; half and double tempos are the usual confusions)`);
