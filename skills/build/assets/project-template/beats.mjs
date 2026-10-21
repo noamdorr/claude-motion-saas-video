@@ -105,12 +105,12 @@ const result = await page.evaluate(async ({ b64, fps, bpmHint, priorWidth, harm,
   const envMax = Math.max(...env);
   let firstOnset = 0; for (let f = 0; f < nFrames; f++) if (env[f] > envMax * 0.08) { firstOnset = f * frameT; break; }
   while (t + tol < firstOnset) t += beat;
-  while (t < duration) {
-    let bf = Math.round(t / frameT), bv = -1;
-    for (let f = Math.round((t - tol) / frameT); f <= Math.round((t + tol) / frameT); f++) if (f >= 0 && f < nFrames && env[f] > bv) { bv = env[f]; bf = f; }
-    const snapped = bv > 0 ? bf * frameT : t;
-    beats.push(+snapped.toFixed(3));
-    t = snapped + beat;
+  // Walk the ideal grid; snap each beat to the strongest onset within the tolerance, but step the
+  // ideal time, not the snapped one, so a loose snap never shifts every later beat.
+  for (let ideal = t; ideal < duration; ideal += beat) {
+    let bf = Math.round(ideal / frameT), bv = -1;
+    for (let f = Math.round((ideal - tol) / frameT); f <= Math.round((ideal + tol) / frameT); f++) if (f >= 0 && f < nFrames && env[f] > bv) { bv = env[f]; bf = f; }
+    beats.push(+((bv > 0 ? bf * frameT : ideal)).toFixed(3));
   }
   // --- bars: assume 4/4, downbeat = the beat phase with the most energy over the track
   let barOff = 0, barBest = -1;
@@ -121,15 +121,18 @@ const result = await page.evaluate(async ({ b64, fps, bpmHint, priorWidth, harm,
   const bars = beats.filter((_, i) => (i - barOff) % 4 === 0);
   // --- hits: the 16 strongest onsets at least a half beat apart
   const maxF = Math.min(nFrames, Math.round(maxSeconds / frameT));
-  const idx = Array.from(env.keys()).filter((f) => f * frameT > 0.15 && f < maxF).sort((a, b) => env[b] - env[a]);
-  const hits = []; const minGap = beat / 2 / frameT;
-  for (const f of idx) { if (hits.length >= 16) break; if (hits.every((h) => Math.abs(h.f - f) > minGap)) hits.push({ f, strength: env[f] }); }
+  const minGap = beat / 2 / frameT;
+  const windowed = (arr) => { // strongest onset per two-second window across the analysed span
+    const out = []; const w = Math.round(2 / frameT);
+    for (let start = Math.round(0.15 / frameT); start < maxF; start += w) { let bf = -1, bv = 0; for (let f = start; f < Math.min(maxF, start + w); f++) if (arr[f] > bv) { bv = arr[f]; bf = f; } if (bf >= 0) out.push({ f: bf, strength: bv }); }
+    return out.sort((a, b) => b.strength - a.strength);
+  };
+  const hits = windowed(env).filter((h, i, a) => a.slice(0, i).every((p) => Math.abs(p.f - h.f) > minGap)).slice(0, 24);
   const maxEnv = hits.length > 1 ? hits[1].strength : hits.length ? hits[0].strength : 1;
   const hitsOut = hits.map((h) => ({ t: +(h.f * frameT).toFixed(3), strength: +Math.min(1, h.strength / maxEnv).toFixed(2) })).sort((a, b) => a.t - b.t);
   // --- kicks: the 16 strongest low-band onsets; drop: the first kick whose preceding two seconds
   // carry under 35% of the low-band energy of the two seconds that follow it (silence, then bass).
-  const lidx = Array.from(lowEnv.keys()).filter((f) => f * frameT > 0.15 && f < maxF).sort((a, b) => lowEnv[b] - lowEnv[a]);
-  const kicks = []; for (const f of lidx) { if (kicks.length >= 16) break; if (kicks.every((h) => Math.abs(h.f - f) > minGap)) kicks.push({ f, strength: lowEnv[f] }); }
+  const kicks = windowed(lowEnv).slice(0, 24);
   const kMax = kicks.length > 1 ? kicks[1].strength : kicks.length ? kicks[0].strength : 1;
   const kicksOut = kicks.map((h) => ({ t: +(h.f * frameT).toFixed(3), strength: +Math.min(1, h.strength / kMax).toFixed(2) })).sort((a, b) => a.t - b.t);
   const two = Math.round(2 / frameT);
