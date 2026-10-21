@@ -1,0 +1,82 @@
+[
+  {
+    "query": "we're launching the new dashboard next tuesday, can you make a 30 sec video of it for the linkedin post? repo is this one, the app is under apps/web",
+    "should_trigger": true
+  },
+  {
+    "query": "I need a quick demo clip of our Mac menu bar app for Product Hunt. Something like those Claude Motion explainers. Just do it, I'll fix stuff after.",
+    "should_trigger": true
+  },
+  {
+    "query": "make me a product teaser for invoicely, 16:9, no questions pls, use whatever is in the repo",
+    "should_trigger": true
+  },
+  {
+    "query": "feature announcement animation for the new 'bulk export' feature in our SaaS, for the changelog page and twitter",
+    "should_trigger": true
+  },
+  {
+    "query": "ok grill me on a launch video for the new app. 25s, linkedin, I have two reference videos I like and a bunch of screenshots in ~/Desktop/shots",
+    "should_trigger": false
+  },
+  {
+    "query": "interview me before you make the video this time, the last automatic cut was way too texty and didn't feel like us",
+    "should_trigger": false
+  },
+  {
+    "query": "let's plan a product video properly: I want to pick the script, the pace and show you the kind of motion I like (the apple ones)",
+    "should_trigger": false
+  },
+  {
+    "query": "can we do an explainer for the homepage hero, around 20 seconds, that shows the three main screens of app.acme.io? ask me what you need",
+    "should_trigger": false
+  },
+  {
+    "query": "change the headline in scene 2 to 'Three warm leads before standup' and make the close a second longer",
+    "should_trigger": false
+  },
+  {
+    "query": "the counter in the launch video should land on 128 not 96, and the cursor is a bit fast",
+    "should_trigger": false
+  },
+  {
+    "query": "here's my storyboard for the launch clip (5 scenes, words per scene in the table) and the brand tokens, build it and render an mp4",
+    "should_trigger": false
+  },
+  {
+    "query": "add a framer motion fade-in to the hero section of the landing page when it scrolls into view",
+    "should_trigger": false
+  },
+  {
+    "query": "record a screen capture of me walking through the onboarding flow and trim it to 2 minutes",
+    "should_trigger": false
+  },
+  {
+    "query": "write the youtube description and the linkedin post copy for the product video we published yesterday",
+    "should_trigger": false
+  },
+  {
+    "query": "set up remotion in this repo and render a 3-second logo sting from logo.svg",
+    "should_trigger": false
+  },
+  {
+    "query": "our marketing video keeps buffering on the site, can you look at the <video> tag and the CDN headers?",
+    "should_trigger": false
+  },
+  {
+    "query": "make a lottie animation for the loading spinner in the app",
+    "should_trigger": false
+  },
+  {
+    "query": "generate a 10 second AI video of a person unboxing our hardware device with Veo",
+    "should_trigger": false
+  },
+  {
+    "query": "add video thumbnails and a play button to the testimonials section",
+    "should_trigger": false
+  },
+  {
+    "query": "convert these 40 product screenshots into a slide deck for the sales team",
+    "should_trigger": false
+  }
+]
