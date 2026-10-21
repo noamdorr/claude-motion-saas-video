@@ -66,6 +66,27 @@ video without it.
 5. The Reechee film uses Bricolage Grotesque because my stand-in answer said so; the live app uses
    Schibsted Grotesk. The grill agent flagged it as the skill now tells it to. One-token swap.
 
+## Added after your first look: soundtracks
+
+You asked about music. What changed:
+
+- `beats.mjs` in every video folder: decodes the track in headless Chrome's WebAudio (no Python),
+  estimates the tempo with a prior around 120 BPM, writes the beat grid, bar lines, strongest hits
+  and the loudest swell, and lists other plausible tempos (half and double tempo are the usual
+  confusions; `--bpm` pins it). `--check video.html beats.json` reports off-beat scene starts.
+  Validated against your two tracks: 116 against a known 117.5, 119.7 against a known 120.
+- `render.mjs --audio track --audio-start s --audio-fade 1.5`: trims the track to the film and
+  fades it out.
+- Grill now asks, as its own question: do you have a track (path, BPM)? If not: silent (default) or
+  "pick one", and then the agent fetches two or three candidates from a royalty-free library by
+  mood and BPM, runs the detector, and shows you the pick with its license line before the
+  storyboard. Lucky reuses a track an earlier film in the repo used and never fetches a stranger's.
+- `skills/build/references/music.md`: the sources (Mixkit serves direct MP3 links under a free
+  commercial license; Pixabay and Free Music Archive need a browser; credit-line libraries only
+  with your say-so), the one-line-license rule, and the beat workflow.
+- Both example films are being re-cut onto their own tracks (the June QuotaCanary track at 117.5
+  BPM, April's Reechee track at 120 BPM). See the end of this file for the result.
+
 ## Not done
 
 - Nobody watched the films. Open them.

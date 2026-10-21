@@ -71,12 +71,14 @@ the adjectives." Then accept their answer.
 | Logo (SVG) and dark variant | the SVG found in the repo, path stated |
 | Screens | recreate as HTML cards from the code; "run the app" only with a documented test recipe |
 | Fonts | display and UI faces from the CSS, Google Fonts names |
-| Music file and BPM | none |
+| Soundtrack: a file (and BPM if known), silent, or "pick one for me" | silent; the film must work with sound off. If "pick one": mood from Round 3 plus the length, two or three candidates from a royalty-free library, the beat detector on each, the pick shown with its license line before the storyboard (the build skill's `references/music.md`) |
 | Sample universe | the fictional names in seed data, fixtures or site mockups |
 | Brand voice rules | from a voice or copy doc if one exists; else no em dashes, no hype words, the product's own nouns |
 
-Ask only for what is missing. If everything is found, Round 4 is one line: "I found all of this;
-say go or correct a line."
+Ask only for what is missing, but always ask the soundtrack question: it is the one answer that
+changes the whole timing grid, and the repo rarely holds it (a track in an earlier video folder is
+the exception; offer it as the default then). If everything else is found, Round 4 is two lines:
+"I found all of this; say go or correct a line. And the soundtrack: yours, silent, or shall I pick?"
 
 ## Reference-video breakdown prompt
 
