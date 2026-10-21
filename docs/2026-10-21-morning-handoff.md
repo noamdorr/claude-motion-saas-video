@@ -99,10 +99,11 @@ You asked about music. What changed:
 ## Not done
 
 - Nobody watched the films. Open them.
-- Description optimization (skill-creator's `run_loop.py` with `evals/trigger-eval.json`) was not
-  run; it needs `claude -p` and about 20 minutes. Worth doing before going public.
-- The repo is private. The draft PR on the old skill
-  (`noamdorr/saas-product-demo-video#1`) links to it, so merge only after it goes public.
+- Description optimization ran after you logged the CLI in (three iterations per front door, about
+  20 minutes): it kept both original descriptions. The probe barely triggers any skill in a bare
+  `claude -p` session, so the result is "no evidence for a change", not "confirmed". Details in
+  `docs/DESIGN.md`.
+- The repo went public on 2026-10-21 and the link PR on the old skill is merged.
 - No 9:16 cut of either film; `edit` knows how, nobody asked.
 - Reddit launch post: not drafted. The README has the pitch; `noams-voice` can turn it into a post.
 

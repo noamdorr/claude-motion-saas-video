@@ -74,3 +74,13 @@ brief and storyboard present) and a trigger-eval query set for description tunin
 iteration re-runs both productions from scratch with the current skill and the agents' own
 "skill feedback" sections drive the next edit. `skills/build/scripts/selftest.mjs <video-folder>`
 is the runtime regression check (scenes render, camera finite, transitions overlap).
+
+## Description tuning (2026-10-21)
+
+skill-creator's `run_loop.py` ran three iterations each for `lucky` and `grill` against
+`evals/trigger-eval-{lucky,grill}.json` (20 queries, 3 probes each, 60/40 train/test split). Both
+runs kept the original description as best (test 6/7). The probe's recall was near zero for every
+variant, including queries that literally say "grill me", while precision stayed at 100%: in a bare
+`claude -p` session with no repo the model tends to answer or ask rather than invoke a skill, so
+the measure says little about triggering inside a real project. Treat the descriptions as
+unchanged by evidence, not confirmed by it; the real triggering test is the two productions.
