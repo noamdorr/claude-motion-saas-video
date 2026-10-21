@@ -3,7 +3,7 @@
  * render.mjs - render a motion video.html to MP4 (or a still / contact sheet).
  *
  *   node render.mjs                         # video.html -> out/video.mp4
- *   node render.mjs --in video.html --out out/launch.mp4 --audio assets/music.mp3
+ *   node render.mjs --in video.html --out out/launch.mp4 --audio assets/music.mp3 [--audio-start 0] [--audio-fade 1.5]
  *   node render.mjs --still 3.2 --out out/frame.png   # one frame at 3.2s
  *   node render.mjs --sheet --out out/sheet.png       # 12-frame contact sheet for review
  *   node render.mjs --from 4 --to 9 --out out/scene2.mp4   # a slice
@@ -113,7 +113,15 @@ const ff = ["-y", "-framerate", String(fps), "-i", join(frameDir, "frame_%05d.pn
 if (args.audio) ff.push("-i", resolve(args.audio));
 ff.push("-c:v", "libx264", "-preset", "slow", "-crf", crf, "-pix_fmt", "yuv420p", "-movflags", "+faststart");
 if (scale !== 1 && !args.keepScale) ff.push("-vf", `scale=${W}:${H}:flags=lanczos`);
-if (args.audio) ff.push("-c:a", "aac", "-b:a", "192k", "-shortest");
+if (args.audio) {
+  // Trim the track to the film, fade it out over the last `audioFade` seconds (default 1.5), and
+  // optionally start it at an offset into the track (`--audio-start 12.5`).
+  const fade = parseFloat(args.audioFade || args["audio-fade"] || "1.5");
+  const total = to - from;
+  const af = [`atrim=start=${parseFloat(args["audio-start"] || "0")}`, "asetpts=PTS-STARTPTS"];
+  if (fade > 0) af.push(`afade=t=out:st=${Math.max(0, total - fade).toFixed(3)}:d=${fade}`);
+  ff.push("-af", af.join(","), "-c:a", "aac", "-b:a", "192k", "-shortest");
+}
 ff.push(outPath);
 run(ffmpeg, ff);
 rmSync(frameDir, { recursive: true, force: true });

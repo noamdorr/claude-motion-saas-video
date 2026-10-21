@@ -4,7 +4,8 @@
  *
  *   node beats.mjs assets/music.mp3 [--out beats.json] [--fps 30] [--bpm 117.5] [--max 60]
  *   --max limits the hits and the swell to the first N seconds (the part a short film will use).
- *   node beats.mjs --check video.html beats.json [--tolerance 2]
+ *   node beats.mjs --check video.html beats.json [--tolerance 2] [--audio-start 0.5]
+ *   --audio-start is the same offset you pass to render.mjs: film time 0 = track time audio-start.
  *
  * Decodes the track in headless Chrome's WebAudio, builds an onset-strength envelope (spectral
  * flux on a log-spaced bank), estimates the tempo by autocorrelation in the 70 to 180 BPM window,
@@ -29,7 +30,7 @@ for (let i = 0; i < argv.length; i++) {
 const fps = parseFloat(args.fps || "30");
 
 if (args.check) {
-  const ok = check(resolve(typeof args.check === "string" ? args.check : positional[0]), resolve(typeof args.check === "string" ? positional[0] : positional[1]), parseFloat(args.tolerance || "2"));
+  const ok = check(resolve(typeof args.check === "string" ? args.check : positional[0]), resolve(typeof args.check === "string" ? positional[0] : positional[1]), parseFloat(args.tolerance || "2"), parseFloat(args["audio-start"] || "0"));
   process.exit(ok ? 0 : 1);
 }
 
@@ -57,7 +58,7 @@ const result = await page.evaluate(async ({ b64, fps, bpmHint, priorWidth, harm,
   // Log-spaced band edges between 30 Hz and 8 kHz (24 bands).
   const bands = []; for (let b = 0; b <= 24; b++) bands.push(Math.round((30 * Math.pow(8000 / 30, b / 24)) / (sr / N)));
   let prev = new Float32Array(24);
-  const onset = new Float32Array(nFrames), rms = new Float32Array(nFrames);
+  const onset = new Float32Array(nFrames), low = new Float32Array(nFrames), rms = new Float32Array(nFrames);
   for (let f = 0; f < nFrames; f++) {
     let e = 0;
     for (let i = 0; i < N; i++) { const v = x[f * H + i]; re[i] = v * win[i]; im[i] = 0; e += v * v; }
@@ -65,13 +66,15 @@ const result = await page.evaluate(async ({ b64, fps, bpmHint, priorWidth, harm,
     fft(re, im);
     const cur = new Float32Array(24);
     for (let b = 0; b < 24; b++) { let s = 0; for (let k = bands[b]; k < bands[b + 1]; k++) s += Math.hypot(re[k], im[k]); cur[b] = Math.log1p(s); }
-    let flux = 0; for (let b = 0; b < 24; b++) flux += Math.max(0, cur[b] - prev[b]);
-    onset[f] = flux; prev = cur;
+    let flux = 0, lowFlux = 0;
+    for (let b = 0; b < 24; b++) { const d = Math.max(0, cur[b] - prev[b]); flux += d; if (b < 6) lowFlux += d; }
+    onset[f] = flux; low[f] = lowFlux; prev = cur;
   }
   // Normalise and remove the local mean (adaptive threshold) so loud sections do not dominate.
   const env = new Float32Array(nFrames);
   const W = 16;
-  for (let f = 0; f < nFrames; f++) { let m = 0, c = 0; for (let k = Math.max(0, f - W); k < Math.min(nFrames, f + W); k++) { m += onset[k]; c++; } env[f] = Math.max(0, onset[f] - m / c); }
+  const lowEnv = new Float32Array(nFrames);
+  for (let f = 0; f < nFrames; f++) { let m = 0, ml = 0, c = 0; for (let k = Math.max(0, f - W); k < Math.min(nFrames, f + W); k++) { m += onset[k]; ml += low[k]; c++; } env[f] = Math.max(0, onset[f] - m / c); lowEnv[f] = Math.max(0, low[f] - ml / c); }
   const frameT = H / sr;
   // --- tempo by autocorrelation of the envelope, 60 to 200 BPM, with a log-Gaussian prior around
   // 120 BPM (one octave wide) and a harmonic sum (lag, 2 lag, 3 lag) so a beat is preferred over its
@@ -99,6 +102,9 @@ const result = await page.evaluate(async ({ b64, fps, bpmHint, priorWidth, harm,
   for (let off = 0; off < beat; off += frameT) { let s = 0; for (let t = off; t < duration; t += beat) { const f = Math.round(t / frameT); if (f < nFrames) s += env[f]; } if (s > bestScore) { bestScore = s; bestOff = off; } }
   // --- beats: grid walk, each beat snapped to the strongest onset within +-12% of a beat
   const beats = []; let t = bestOff; const tol = beat * 0.12;
+  const envMax = Math.max(...env);
+  let firstOnset = 0; for (let f = 0; f < nFrames; f++) if (env[f] > envMax * 0.08) { firstOnset = f * frameT; break; }
+  while (t + tol < firstOnset) t += beat;
   while (t < duration) {
     let bf = Math.round(t / frameT), bv = -1;
     for (let f = Math.round((t - tol) / frameT); f <= Math.round((t + tol) / frameT); f++) if (f >= 0 && f < nFrames && env[f] > bv) { bv = env[f]; bf = f; }
@@ -108,7 +114,10 @@ const result = await page.evaluate(async ({ b64, fps, bpmHint, priorWidth, harm,
   }
   // --- bars: assume 4/4, downbeat = the beat phase with the most energy over the track
   let barOff = 0, barBest = -1;
-  for (let k = 0; k < 4; k++) { let s = 0; for (let i = k; i < beats.length; i += 4) { const f = Math.round(beats[i] / frameT); if (f < nFrames) s += env[f]; } if (s > barBest) { barBest = s; barOff = k; } }
+  const phaseScores = [];
+  for (let k = 0; k < 4; k++) { let s = 0; for (let i = k; i < beats.length; i += 4) { const f = Math.round(beats[i] / frameT); if (f < nFrames) s += lowEnv[f] * 2 + env[f] * 0.25; } phaseScores.push(s); if (s > barBest) { barBest = s; barOff = k; } }
+  const sortedPh = phaseScores.slice().sort((a, b) => b - a);
+  const barConfidence = sortedPh[0] > 0 ? +(1 - sortedPh[1] / sortedPh[0]).toFixed(2) : 0;
   const bars = beats.filter((_, i) => (i - barOff) % 4 === 0);
   // --- hits: the 16 strongest onsets at least a half beat apart
   const maxF = Math.min(nFrames, Math.round(maxSeconds / frameT));
@@ -117,10 +126,28 @@ const result = await page.evaluate(async ({ b64, fps, bpmHint, priorWidth, harm,
   for (const f of idx) { if (hits.length >= 16) break; if (hits.every((h) => Math.abs(h.f - f) > minGap)) hits.push({ f, strength: env[f] }); }
   const maxEnv = hits.length > 1 ? hits[1].strength : hits.length ? hits[0].strength : 1;
   const hitsOut = hits.map((h) => ({ t: +(h.f * frameT).toFixed(3), strength: +Math.min(1, h.strength / maxEnv).toFixed(2) })).sort((a, b) => a.t - b.t);
+  // --- kicks: the 16 strongest low-band onsets; drop: the first kick whose preceding two seconds
+  // carry under 35% of the low-band energy of the two seconds that follow it (silence, then bass).
+  const lidx = Array.from(lowEnv.keys()).filter((f) => f * frameT > 0.15 && f < maxF).sort((a, b) => lowEnv[b] - lowEnv[a]);
+  const kicks = []; for (const f of lidx) { if (kicks.length >= 16) break; if (kicks.every((h) => Math.abs(h.f - f) > minGap)) kicks.push({ f, strength: lowEnv[f] }); }
+  const kMax = kicks.length > 1 ? kicks[1].strength : kicks.length ? kicks[0].strength : 1;
+  const kicksOut = kicks.map((h) => ({ t: +(h.f * frameT).toFixed(3), strength: +Math.min(1, h.strength / kMax).toFixed(2) })).sort((a, b) => a.t - b.t);
+  const two = Math.round(2 / frameT);
+  let drop = null;
+  for (const k of kicksOut) {
+    const f = Math.round(k.t / frameT); let before = 0, after = 0;
+    for (let i = Math.max(0, f - two); i < f; i++) before += low[i];
+    for (let i = f; i < Math.min(nFrames, f + two); i++) after += low[i];
+    if (after > 0 && before / after < 0.5 && k.strength >= 0.4) { drop = { t: k.t, strength: k.strength }; break; }
+  }
   // --- swell: loudest 1-second RMS window
   const win1 = Math.round(1 / frameT); let sw = 0, swT = 0;
-  for (let f = 0; f + win1 < maxF; f++) { let s = 0; for (let k = 0; k < win1; k++) s += rms[f + k]; if (s > sw) { sw = s; swT = (f + win1 / 2) * frameT; } }
-  return { bpm: +bpm.toFixed(2), beat: +beat.toFixed(4), alternatives, beats, bars, hits: hitsOut, swell: { t: +swT.toFixed(2), rms: +(sw / win1).toFixed(3) }, duration: +duration.toFixed(2) };
+  const loud = new Float32Array(Math.max(0, maxF - win1));
+  for (let f = 0; f + win1 < maxF; f++) { let s = 0; for (let k = 0; k < win1; k++) s += rms[f + k]; loud[f] = s; if (s > sw) { sw = s; swT = (f + win1 / 2) * frameT; } }
+  const swells = []; const sorted = Array.from(loud.keys()).sort((a, b) => loud[b] - loud[a]);
+  for (const f of sorted) { if (loud[f] < sw * 0.9) break; if (swells.every((x) => Math.abs(x - f) > two)) swells.push(f); }
+  const swellsOut = swells.map((f) => +((f + win1 / 2) * frameT).toFixed(2)).sort((a, b) => a - b);
+  return { bpm: +bpm.toFixed(2), beat: +beat.toFixed(4), alternatives, beats, bars, barConfidence, kicks: kicksOut, drop, swells: swellsOut, hits: hitsOut, swell: { t: +swT.toFixed(2), rms: +(sw / win1).toFixed(3) }, duration: +duration.toFixed(2) };
 }, { b64: bytes.toString("base64"), fps, bpmHint: args.bpm ? parseFloat(args.bpm) : 0, priorWidth: parseFloat(args["prior-width"] || "0.5"), harm: parseFloat(args.harm || "0"), maxSeconds: parseFloat(args.max || "60") });
 await browser.close();
 result.file = file; result.fps = fps;
@@ -129,10 +156,17 @@ console.log(`[beats] ${result.bpm} BPM (${result.beat}s per beat), ${result.beat
 if (result.alternatives.length) console.log(`[beats] other plausible tempos: ${result.alternatives.join(", ")} BPM (pass --bpm N to pin one; half and double tempos are the usual confusions)`);
 console.log(`[beats] first beats: ${result.beats.slice(0, 8).join(", ")}  bars start: ${result.bars.slice(0, 6).join(", ")}`);
 console.log(`[beats] strongest hits: ${result.hits.filter((h) => h.strength >= 0.6).map((h) => `${h.t}s`).join(", ")}`);
-console.log(`[beats] swell at ${result.swell.t}s; grid for scene starts: every ${result.beat}s from ${result.beats[0]}s, bars every ${(result.beat * 4).toFixed(3)}s`);
+console.log(`[beats] strongest kicks: ${result.kicks.filter((h) => h.strength >= 0.6).map((h) => `${h.t}s`).join(", ")}`);
+console.log(`[beats] drop (bass comes in after a quiet stretch): ${result.drop ? result.drop.t + "s" : "none found"}; swell${result.swells.length > 1 ? "s (phrase peaks, a looping track)" : ""}: ${result.swells.join("s, ")}s`);
+console.log(`[beats] bar lines are a guess (confidence ${result.barConfidence}; under 0.3 means the four beat phases look alike): scene starts on beats are safe, bars are a hint`);
+console.log(`[beats] grid for scene starts: every ${result.beat}s from ${result.beats[0]}s, bars every ${(result.beat * 4).toFixed(3)}s`);
 
-function check(htmlPath, beatsPath, tolerance) {
+function check(htmlPath, beatsPath, tolerance, audioStart) {
   const html = readFileSync(htmlPath, "utf8"); const b = JSON.parse(readFileSync(beatsPath, "utf8"));
+  // Film time = track time - audioStart.
+  b.beats = b.beats.map((x) => +(x - audioStart).toFixed(3)).filter((x) => x >= -0.05);
+  b.bars = b.bars.map((x) => +(x - audioStart).toFixed(3)).filter((x) => x >= -0.05);
+  if (audioStart) console.log(`film time = track time - ${audioStart}s`);
   const lit = html.slice(html.indexOf("defineVideo("));
   const si = lit.indexOf("scenes");
   let depth = 0, started = false; const starts = []; let cur = null;
