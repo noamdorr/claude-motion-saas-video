@@ -26,8 +26,8 @@ Two videos were built on the first night with this plugin, one through each mode
 
 | product | mode | video |
 | --- | --- | --- |
-| Reechee, the new lead-first app (web) | grill | `examples/reechee/out/reechee-launch.mp4` (25s) |
-| QuotaCanary for Mac (menu bar app) | lucky | `examples/quotacanary/out/quotacanary-mac-launch.mp4` (25.5s) |
+| Reechee, the new lead-first app (web) | grill | `examples/reechee/out/reechee-launch.mp4` (25s, cut to the founder's own track) |
+| QuotaCanary for Mac (menu bar app) | lucky | `examples/quotacanary/out/quotacanary-mac-launch.mp4` (26s, cut to the app's earlier launch track) |
 
 Each example folder holds its `brief.md`, `storyboard.md` and `video.html` (and, for the grill one,
 the interview transcript), so you can read how a brief turns into a storyboard and scenes.

@@ -17,7 +17,7 @@ Filled by `lucky` from the repo (no live site fetch needed: the site source is i
 - Destination: Product Hunt gallery + LinkedIn feed post
 - Plays with sound off: yes (music is a layer on top)
 - Aspect: 16:9 (1920x1080, 30 fps)
-- Length in seconds: 26.05 (25.5 before the music re-cut)
+- Length in seconds: 26.1 (25.5 before the music re-cut)
 - The one idea the viewer should leave with: Warns you before your API credits run out. (hero line, shortened from 12 to 8 words, verbs kept)
 - The three proofs (site feature blocks, in site order):
   1. Low-balance alerts: the menu bar bird turns red with a "!" badge and a notification lands: "Hunter / Searches critical: 250 of 10,000 left" (`Copy.alertBody`, `Alerts.swift:124`). Screen: `assets/screens/menu-bar-bird-critical.png`, `assets/screens/menu-bar-panel-two-need-attention.png`.
@@ -45,7 +45,7 @@ Filled by `lucky` from the repo (no live site fetch needed: the site source is i
   - `assets/screens/menu-bar-bird-critical.png`, `menu-bar-bird-low.png` (132x88): the menu bar mark states
   - `assets/screens/alerts-prompt.png` (760x698): reference only
 - Sample universe: the app's demo stack (`mac/Sources/QuotaCanaryCore/StackScenarios.swift` showcase): Hunter Searches 250 / 10,000 (Critical, ~2 days), Apollo Lead Credits 1,000 / 10,000 (Low, ~5 days), OpenRouter Credits $45.00, Prospeo Credits 4,528 / 10,000, Tavily Plan Credits 914 / 10,000. Provider logos copied from `public/logos/` to `assets/sample/` (hunter 128, apollo 256, openrouter 128, prospeo 180, tavily).
-- Music: `assets/music.mp3`, the user's own track from the June 2026 QuotaCanary launch film (license: the user's own track, reused from the earlier film). 117.5 BPM, audio starts 7.825s into the track, fades out over the last 1.5s.
+- Music: `assets/music.mp3`, the user's own track from the June 2026 QuotaCanary launch film (license: the user's own track, reused from the earlier film). 117.5 BPM, audio starts 8.127s into the track, fades out over the last 1.5s.
 - Reference videos and the one thing to borrow from each: `video/docs/HANDOFF.md` (earlier film): drain a meter before a number lands so it never reads as a minus sign; keep the quiet-to-sings payoff for the end card; never two "QuotaCanary X" sentences in a row. `baseline-video/NOTES.md`: notification copy must match `Copy.alertBody`; light mode only; CTA is quotacanary.com, not "Download".
 
 ## Voice

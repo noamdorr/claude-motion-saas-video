@@ -49,7 +49,9 @@ happen again. YouTube Audio Library needs a Google login and is not reachable fr
    order: beats (reliable), kicks and hits (reliable), the drop (good when found), swells (a
    looping track has a phrase peak every four bars, so "the swell" is a choice, not a fact),
    bars (a guess; the printed confidence says how alike the four beat phases look, and a two-beat
-   error is common). Scene starts on beats are always safe; bar lines are a hint.
+   error is common). Scene starts on beats are always safe; bar lines are a hint. A track whose
+   hits fall between grid beats in its loud section has a swung or triplet feel: the grid is still
+   right for cuts, but put the pops on the hits you can hear (the kicks list), not on the grid.
 2. Set the storyboard grid to the beat. Scene starts on bar lines (every fourth beat), the cut
    into the product reveal on the swell or the strongest hit near it, clicks and status flips on
    beats. The last headline word of each scene should land on a beat too.

@@ -101,7 +101,7 @@ const result = await page.evaluate(async ({ b64, fps, bpmHint, priorWidth, harm,
   let bestOff = 0, bestScore = -1;
   for (let off = 0; off < beat; off += frameT) { let s = 0; for (let t = off; t < duration; t += beat) { const f = Math.round(t / frameT); if (f < nFrames) s += env[f]; } if (s > bestScore) { bestScore = s; bestOff = off; } }
   // --- beats: grid walk, each beat snapped to the strongest onset within +-12% of a beat
-  const beats = []; let t = bestOff; const tol = beat * 0.12;
+  const beats = []; let t = bestOff; const tol = beat * 0.05;
   const envMax = Math.max(...env);
   let firstOnset = 0; for (let f = 0; f < nFrames; f++) if (env[f] > envMax * 0.08) { firstOnset = f * frameT; break; }
   while (t + tol < firstOnset) t += beat;

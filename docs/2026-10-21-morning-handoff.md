@@ -84,8 +84,17 @@ You asked about music. What changed:
 - `skills/build/references/music.md`: the sources (Mixkit serves direct MP3 links under a free
   commercial license; Pixabay and Free Music Archive need a browser; credit-line libraries only
   with your say-so), the one-line-license rule, and the beat workflow.
-- Both example films are being re-cut onto their own tracks (the June QuotaCanary track at 117.5
-  BPM, April's Reechee track at 120 BPM). See the end of this file for the result.
+- Both example films are re-cut onto their own tracks and verified (every scene start on the beat,
+  AAC audio stream present, no stray jumps):
+  - Reechee on April's track at 120 BPM, audio starts 0.5s into the track; the swell lands on
+    "Reveal who wrote it.", the Unlocked pop on the strongest hit at 12.0s, 25.0s.
+  - QuotaCanary on the June track at 117.5 BPM, audio starts 8.127s in; the product cut lands on
+    the beat at 3.6s as the loud section starts, the bird flip on 5.6s, 26.1s.
+  Both are the same films you saw, retimed by tenths of a second; copy, layout and camera are
+  unchanged. Watch them with sound: the cut into the product and the close are the two moments
+  to judge. Honest caveats from the tool: bar lines on both tracks are low-confidence guesses
+  (scene starts are on beats regardless), and the QuotaCanary track has a swung feel the detector
+  reads as 116 BPM against your known 117.5.
 
 ## Not done
 
