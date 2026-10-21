@@ -22,7 +22,7 @@ Two films it made, one for a Mac menu bar app and one for my own SaaS, are in th
 
 Would love to hear what breaks when you run it on your product (the Mac app one needed a few rounds, menu bars are annoying to film).
 
-P.S. Before anyone says "that is just Playwright screenshots stitched with ffmpeg", it is. The trick is the 450 lines that make the animation seekable so every frame is deterministic, and the motion grammar file that stops it from looking like animated slides (the thing people complain about with Motion itself).
+P.S. Before anyone says "that is just Playwright screenshots stitched with ffmpeg", it is. The trick is the 450 lines that make the animation seekable so every frame is deterministic, and the motion grammar file that stops it from looking like animated slides (the thing people complain about with Motion itself). Also, full disclosure, I do not have Motion access myself; this is built from Anthropic's published description and the export contract the community reverse-engineered, so if you do have Motion, tell me where it diverges.
 
 P.P.S. To be honest, my earlier Remotion skill for the same job still brings people to my product's site, so yes, I am hoping this one does too. It also ran overnight while I slept, which is a sentence I did not expect to write this year.
 

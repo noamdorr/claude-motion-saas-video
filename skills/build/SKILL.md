@@ -54,8 +54,8 @@ show it to them in one message before building.
    `defineVideo` and re-lay out the scenes; see `references/motion-grammar.md` "Aspect ratios".
 9. **Deliver**: the MP4 path, a poster still, and three lines on what you assumed or left out.
    `node bundle.mjs` writes `out/video.bundle.html`, one file with the runtime and images inlined,
-   which pastes into claude.ai as an artifact (and opens in Claude Motion's editor on plans that
-   have it) and feeds the community Stage exporters.
+   which pastes into claude.ai as an artifact and feeds the community Stage exporters. (Whether
+   Claude Motion's own editor accepts it is untested: this plugin was built without Motion access.)
    Open the MP4 for the user when you can (`open out/<name>.mp4` on macOS); in an unattended run
    skip the open and put the paths and the sheet first. Commit the folder.
 

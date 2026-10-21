@@ -16,9 +16,12 @@ Two ways in:
 Then `/motion-video:edit` changes one word, one number, one timing, or one scene, and the rest stays
 exactly as it was. That is the Claude Motion idea: the video is code, so a correction is a diff.
 
-> Unofficial. Claude Motion is Anthropic's beta feature on Team and Enterprise plans. This plugin
-> gives Claude Code users the same workflow and an MP4 export, built on the same "seekable
-> animation" contract the community exporters use, with no plan requirement and no Remotion setup.
+> Unofficial, and built without Motion access. Claude Motion is Anthropic's beta feature on Team
+> and Enterprise plans. This plugin gives Claude Code users the same workflow and an MP4 export,
+> built from Anthropic's published description of Motion (code-driven animation, no video model,
+> one value edits, MP4 out) and the "seekable animation" contract the community reverse-engineered
+> for exporting Claude Design and artifact animations. If you have Motion and see where it
+> diverges, open an issue. No plan requirement, no Remotion setup.
 
 ## Example output
 
@@ -112,4 +115,4 @@ step, and the Claude Motion editing loop.
 ## License
 
 MIT. Built by [Noam Dorr](https://github.com/noamdorr), who also builds
-[Reechee](https://reechee.io).
+[Reechee](https://reechee.io/?utm_source=github&utm_medium=readme&utm_campaign=claude-motion-saas-video).
