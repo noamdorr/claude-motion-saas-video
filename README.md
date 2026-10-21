@@ -84,6 +84,8 @@ motion-video/
   motion.js       the runtime (400 lines, no dependencies): scenes, tracks, camera, cursor targets
   render.mjs      MP4, stills, contact sheets and a jerk check via headless Chromium + ffmpeg
   check-copy.mjs  fails on em dashes and over-budget copy, warns on filler and non-determinism
+  beats.mjs       BPM, beat grid, strongest hits and the swell of a soundtrack (headless WebAudio,
+                  no Python), plus an off-beat check for scene starts
   preview.mjs     local server for the scrubbable player
   brief.md, storyboard.md, assets/, out/
 ```

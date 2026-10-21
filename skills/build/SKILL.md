@@ -33,21 +33,26 @@ show it to them in one message before building.
    the product cards), motion in the `defineVideo({...})` block. Keep the starter's structure:
    brand tokens in `:root`, one `<section data-scene="id">` per storyboard row, scene-local times.
    Build product UI as HTML cards (`references/ui-cards.md`), not full-bleed screenshots.
-4. **Check copy**: `node check-copy.mjs video.html`. It fails on em dashes and on too many words
+4. **Beats, if there is a track**: `node beats.mjs assets/music.mp3 --out assets/beats.json`
+   before writing scene times, and set the storyboard grid to its beat (bar lines for scene
+   starts, the swell for the reveal). After the build, `node beats.mjs --check video.html
+   assets/beats.json` reports off-beat scene starts. See `references/music.md`.
+5. **Check copy**: `node check-copy.mjs video.html`. It fails on em dashes and on too many words
    per second, and warns on filler words, oversized cards and non-deterministic code. Fix, do not
    suppress.
-5. **Look at it**: `node render.mjs --sheet --out out/sheet.png` gives a 12-frame contact sheet in
+6. **Look at it**: `node render.mjs --sheet --out out/sheet.png` gives a 12-frame contact sheet in
    under ten seconds. Read the PNG. Then render stills at the moments that matter
    (`--still 4.2 --out out/f.png`): the end of each entrance, every click, the CTA. Use
    `references/review.md` as the checklist. Fix, re-sheet, repeat. Expect two or three rounds.
-6. **Checkpoint with the user** when they are present: a sheet plus one short clip of the first
+7. **Checkpoint with the user** when they are present: a sheet plus one short clip of the first
    product scene (`node render.mjs --from 4 --to 9 --out out/scene-check.mp4`). Approval of a still
    is not approval of rhythm; send the clip.
-7. **Render**: `node render.mjs --out out/<name>.mp4` (1080p, CRF 16, about one second of wall time
+8. **Render**: `node render.mjs --out out/<name>.mp4` (1080p, CRF 16, about one second of wall time
    per second of video on a laptop). Add `--audio assets/music.mp3` to mux a soundtrack,
-   `--scale 2` for a supersampled master. For 9:16 or 1:1, change `width`/`height` in
+   `--scale 2` for a supersampled master. With a track: `--audio assets/music.mp3 --audio-start <s>`
+   trims it to the film and fades it out over the last 1.5s. For 9:16 or 1:1, change `width`/`height` in
    `defineVideo` and re-lay out the scenes; see `references/motion-grammar.md` "Aspect ratios".
-8. **Deliver**: the MP4 path, a poster still, and three lines on what you assumed or left out.
+9. **Deliver**: the MP4 path, a poster still, and three lines on what you assumed or left out.
    `node bundle.mjs` writes `out/video.bundle.html`, one file with the runtime and images inlined,
    which pastes into claude.ai as an artifact (and opens in Claude Motion's editor on plans that
    have it) and feeds the community Stage exporters.
@@ -74,6 +79,7 @@ show it to them in one message before building.
   camera, type scale, the cardstock look, copy rules, aspect ratios, music.
 - `references/ui-cards.md`: recreating product screens as HTML, screenshots as reference,
   Mac and mobile chrome, sample universes, logos.
+- `references/music.md`: where a track comes from, the license rule, the beat workflow.
 - `references/review.md`: the contact-sheet review checklist and the fixes for common failures.
 - `references/gotchas.md`: fonts, file URLs, blank frames, transforms, performance.
 
@@ -81,5 +87,6 @@ show it to them in one message before building.
 
 - `scripts/scaffold.mjs <dir>`: copies the project template and installs dependencies.
 - `assets/project-template/`: `motion.js` (runtime), `render.mjs`, `check-copy.mjs`,
-  `preview.mjs`, `bundle.mjs`, `video.html` (worked starter), `package.json`.
+  `beats.mjs` (BPM, beat grid, hits, swell, and an off-beat check), `preview.mjs`, `bundle.mjs`,
+  `video.html` (worked starter), `package.json`.
 - `assets/brief-template.md`, `assets/storyboard-template.md`.

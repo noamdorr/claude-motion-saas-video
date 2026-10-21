@@ -142,10 +142,16 @@ Prefill from the repo and ask for gaps only:
 1. Logo: the SVG you found (path), and a dark variant if the close is dark.
 2. Screens: the paths you found, or "run the app" (only with a documented local test recipe; see
    Safety), or recreate them as HTML cards from the code, which is the default.
-3. Fonts: the display and UI faces from the CSS. Music: a file and its BPM, or none (default none;
-   the film must work silent).
-4. Sample universe and voice: the fictional company and person names from seed data or the site,
-   and the voice rules (words to use, words to avoid).
+3. Fonts: the display and UI faces from the CSS.
+4. Soundtrack. Ask it as its own question, because it changes the whole grid: "Do you have a
+   track? If yes, the path (and the BPM if you know it). If not: silent (default, the film must
+   work with sound off anyway), or I pick one from a royalty-free library and tell you its
+   license." If they say pick, take the mood from Round 3's adjectives and pace, fetch two or
+   three candidates, run the beat detector, and show them the pick with its license line before
+   the storyboard. The sources and the rules are in the build skill's `references/music.md`.
+Sample universe and voice (the fictional company and person names from seed data or the site,
+and the voice rules) are read from the repo and stated as a prefill line under question 1 rather
+than asked, unless nothing was found.
 
 ## Step 5: brief and storyboard
 

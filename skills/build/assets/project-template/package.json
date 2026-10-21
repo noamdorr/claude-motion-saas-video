@@ -8,7 +8,8 @@
     "still": "node render.mjs --still",
     "check": "node check-copy.mjs video.html",
     "preview": "node preview.mjs",
-    "bundle": "node bundle.mjs"
+    "bundle": "node bundle.mjs",
+    "beats": "node beats.mjs"
   },
   "dependencies": {
     "playwright": "^1.50.0"

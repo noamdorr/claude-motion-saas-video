@@ -90,7 +90,10 @@ Defaults when nothing is found:
 - The close: the founder's approved tagline if one exists, at its own length; otherwise a promise
   you write in six words or fewer.
 - The one idea: the homepage hero headline.
-- Music: none.
+- Music: none, unless the repo already holds a track an earlier film used (`video/`,
+  `remotion*/`, `*.mp3` next to a video project). Then reuse it, run `beats.mjs`, cut on its
+  grid, and list it as an assumption with the file path. Never fetch a stranger's track in lucky
+  mode; that is a taste decision the user did not delegate.
 
 Skip only what would be a claim you cannot back: customer counts, testimonials, logos of customers,
 revenue, awards, price or plan wording. If the site shows them, they still stay out unless the repo
@@ -162,7 +165,7 @@ scaffolded). It owns the runtime API, the copy check, the contact-sheet review a
 not shortcut its review loop: in lucky mode nobody else looks before the user does, so the two or
 three sheet-and-fix rounds are your only quality gate.
 
-Skip `build`'s user checkpoint (step 6). Lucky mode delivers the finished film; the user's
+Skip `build`'s user checkpoint (step 7). Lucky mode delivers the finished film; the user's
 checkpoint is the delivery.
 
 ## 6. Deliver

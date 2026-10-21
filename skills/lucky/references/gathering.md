@@ -160,12 +160,14 @@ them in every card. If the marketing site has its own sample set, it wins over t
 because it is the one the public has seen. Never use names from TV shows or films. If nothing
 exists, invent neutral names that could be real companies and log that as an assumption.
 
-## 7. Existing videos and retros
+## 7. Existing videos, retros and music
 
 Look for: `video/`, `remotion*/`, `hyperframes*/`, `motion*/`, `*.mp4` and `*.webm` in docs or
 public, `*retro*.md`, `HANDOFF.md`, `feedback*.md`, `taste*.md`, `memory/` notes mentioning video.
 
-These often hold the founder's actual taste: word counts that were approved or rejected, motion they
+A track in an earlier video folder (`music.*`, `soundtrack.*`, any `*.mp3`) is a reuse candidate;
+note its path and whether the earlier film shipped with it (the build skill's `references/music.md`
+says how it is used). These often hold the founder's actual taste: word counts that were approved or rejected, motion they
 liked, fonts they banned, a film they called the reference. Treat them as strong signals, stronger
 than the defaults. Copy the specific rule into the brief ("rejected cut had 215 words, approved
 had 117") rather than a summary.

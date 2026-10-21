@@ -111,9 +111,11 @@ between. Do not scale the 16:9 layout; re-lay out each scene with the same copy 
 ## 7. Music
 
 Claude Motion exports silent video and so does the default here; the film must work with sound off.
-If the brief supplies a track, note its BPM (ask, or read it from a DAW or an online detector),
-set the grid to the beat, and mux with `render.mjs --audio`. Cuts on downbeats, clicks on
-backbeats, the close on a bar line. Do not add stock music the user did not pick.
+When there is a track (the user's, one found in the repo, or one you picked from a royalty-free
+library because the user said to), `beats.mjs` gives you the BPM, the beat grid, the bar lines,
+the strongest hits and the swell. The grid becomes the beat: scene starts on bar lines, the product
+reveal on the swell, clicks and flips on beats, the close on a bar line. `references/music.md` has
+the sources, the license rule and the workflow. Do not add music the user did not ask for.
 
 ## 8. One signature move
 
