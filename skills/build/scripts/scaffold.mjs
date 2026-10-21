@@ -20,6 +20,7 @@ const target = resolve(args[0] || "motion-video");
 
 mkdirSync(join(target, "assets", "screens"), { recursive: true });
 mkdirSync(join(target, "out"), { recursive: true });
+if (readdirSync(join(target, "out")).length) console.log(`note   ${join(target, "out")} is not empty; old renders there are not from this run`);
 
 for (const f of readdirSync(template)) {
   const src = join(template, f), dst = join(target, f);

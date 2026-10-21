@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QuotaCanary for Mac, launch film</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..600,0..100&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ---------- brand tokens (brief.md) ---------- */
+  :root {
+    --bg: #fffdf5;          /* --cream */
+    --bg-2: #fbf6e4;        /* --cream-2 */
+    --bg-3: #f5efd8;
+    --ink: #1a1a1a;
+    --ink-2: #3a3a3a;
+    --muted: #6b6b66;
+    --hair: rgba(26,26,26,0.12);
+    --gold: #ffc400;        /* fills only */
+    --gold-deep: #e0ac00;
+    --gold-tint: #fff3c2;
+    --gold-ink: #8a6600;
+    --red: #ff3b30;         /* macOS system red, as the app uses */
+    --red-text: #b3261e;
+    --green: #34c759;
+    --card: #ffffff;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-ui: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    --shadow: 0 30px 80px -20px rgba(26,26,26,.25), 0 8px 24px -12px rgba(26,26,26,.16);
+  }
+  html, body { margin: 0; background: #111; }
+  [data-stage] { position: relative; overflow: hidden; background: var(--bg); color: var(--ink); font-family: var(--font-ui); }
+  [data-scene] { display: none; will-change: transform, opacity; }
+  .cam { position: absolute; inset: 0; }
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .blob { position: absolute; width: 1400px; height: 1400px; left: 260px; top: -300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,196,0,.10) 0%, rgba(255,196,0,0) 62%); pointer-events: none; }
+
+  /* ---------- type ---------- */
+  .h1, .h2 { font-family: var(--font-display); font-weight: 500; font-variation-settings: "opsz" 144, "SOFT" 50; letter-spacing: -0.022em; color: var(--ink); }
+  .h1 { font-size: 104px; line-height: 1.04; max-width: 1500px; }
+  .h2 { font-size: 88px; line-height: 1.06; }
+  .w { display: inline-block; will-change: transform, opacity; }
+  .hl { position: relative; display: inline-block; --p: 0; }
+  .hl::before { content: ""; position: absolute; left: -6px; right: -6px; bottom: 0.08em; height: 0.36em; background: var(--gold);
+    transform-origin: left center; transform: scaleX(var(--p)); z-index: -1; border-radius: 4px; }
+  .hl .w { position: relative; z-index: 1; }
+
+  /* ---------- hook: tool tiles ---------- */
+  .tiles { display: flex; gap: 36px; margin-bottom: 84px; }
+  .tile { width: 168px; height: 196px; background: var(--card); border-radius: 28px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
+  .tile img { width: 76px; height: 76px; border-radius: 16px; object-fit: contain; }
+  .meter { width: 108px; height: 12px; border-radius: 6px; background: #ece9e0; overflow: hidden; }
+  .meter i { display: block; height: 100%; border-radius: 6px; background: #8f8d86; }
+
+  /* ---------- shift: desktop slab + menu bar ---------- */
+  .slab { position: absolute; left: 460px; top: 100px; width: 1000px; height: 470px; border-radius: 30px; overflow: hidden; box-shadow: var(--shadow);
+    background: linear-gradient(135deg, #fbf6e4 0%, #fff3c2 55%, #f5efd8 100%); }
+  .menubar { position: absolute; left: 0; right: 0; top: 0; height: 64px; background: rgba(255,255,255,.72); border-bottom: 1px solid var(--hair);
+    display: flex; align-items: center; padding: 0 28px; gap: 30px; font: 500 24px/1 var(--font-ui); color: var(--ink); }
+  .menubar .grow { flex: 1; }
+  .mb-ico { width: 26px; height: 26px; display: block; }
+  .bird { position: relative; width: 36px; height: 35px; }
+  .bird svg { position: absolute; inset: 0; width: 36px; height: 35px; }
+  .bird .red { opacity: 0; }
+  .bird .badge { position: absolute; right: -16px; top: -6px; width: 22px; height: 22px; border-radius: 50%; background: var(--red); color: #fff;
+    font: 800 16px/22px var(--font-ui); text-align: center; opacity: 0; }
+  .notif { position: absolute; right: 24px; top: 92px; width: 620px; box-sizing: border-box; padding: 22px 24px; border-radius: 26px; background: rgba(255,255,255,.96);
+    box-shadow: 0 20px 50px -18px rgba(26,26,26,.30); display: flex; gap: 20px; align-items: center; text-align: left; }
+  .appicon { width: 60px; height: 60px; border-radius: 14px; background: var(--gold); display: flex; align-items: center; justify-content: center; flex: none; }
+  .appicon svg { width: 38px; height: 37px; }
+  .notif b { display: block; font: 700 27px/1.2 var(--font-ui); }
+  .notif span { display: block; font: 400 27px/1.3 var(--font-ui); color: var(--ink-2); }
+  .shift-h { position: absolute; left: 0; right: 0; top: 640px; text-align: center; }
+
+  /* ---------- Mac panel (380pt at 2x) ---------- */
+  .stack { position: absolute; left: 0; right: 0; top: 70px; display: flex; flex-direction: column; align-items: center; }
+  .panel { position: relative; width: 760px; box-sizing: border-box; padding: 18px 16px 18px; border-radius: 26px; background: rgba(255,255,255,.97); box-shadow: var(--shadow); text-align: left; margin-top: 48px; }
+  .panel::before { content: ""; position: absolute; top: -12px; left: 50%; margin-left: -14px; width: 28px; height: 28px; background: #fff; transform: rotate(45deg); border-radius: 5px; }
+  .p-head { display: flex; align-items: center; gap: 16px; padding: 8px 12px 14px; font: 600 30px/1 var(--font-ui); }
+  .p-head svg { width: 30px; height: 29px; }
+  .p-head .grow { flex: 1; }
+  .p-head small { font: 400 23px/1 var(--font-ui); color: var(--muted); }
+  .p-sec { font: 600 23px/1 var(--font-ui); color: #85847e; padding: 16px 12px 10px; }
+  .p-row { display: flex; align-items: center; gap: 16px; padding: 12px 12px; border-radius: 12px; font: 500 29px/1 var(--font-ui); }
+  .p-row .glyph { width: 26px; height: 26px; flex: none; }
+  .p-row img { width: 40px; height: 40px; border-radius: 10px; object-fit: contain; flex: none; }
+  .p-row .pool { color: #8b8a84; font-weight: 400; }
+  .p-row .grow { flex: 1; }
+  .p-row .amt { font-variant-numeric: tabular-nums; font-weight: 400; }
+  .p-div { height: 1px; background: var(--hair); margin: 10px 12px; }
+  .row-sel { position: absolute; inset: 0; border-radius: 12px; background: #d6e4f7; opacity: 0; z-index: -1; }
+  .row-hunter { position: relative; z-index: 0; }
+
+  /* ---------- inspector card ---------- */
+  .insp { width: 900px; box-sizing: border-box; padding: 44px 52px 40px; border-radius: 26px; background: #fff; box-shadow: var(--shadow); text-align: left; margin-top: 56px; }
+  .insp-top { display: flex; align-items: center; gap: 18px; font: 700 36px/1 var(--font-ui); }
+  .insp-top img { width: 46px; height: 46px; }
+  .insp .lbl { font: 400 28px/1 var(--font-ui); color: #85847e; margin-top: 34px; }
+  .insp .big { font: 400 62px/1 var(--font-ui); font-variant-numeric: tabular-nums; margin-top: 14px; }
+  .bar { position: relative; height: 16px; border-radius: 8px; background: #ececec; margin-top: 26px; overflow: hidden; }
+  .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 8px; background: var(--red); width: 796px; }
+  .spark { display: block; margin-top: 22px; width: 796px; height: 130px; }
+  .eta { display: inline-block; font: 700 36px/1 var(--font-ui); margin-top: 24px; }
+  .burn { font: 400 25px/1 var(--font-ui); color: #85847e; margin-top: 16px; }
+
+  /* ---------- connect card ---------- */
+  .conn { width: 760px; box-sizing: border-box; padding: 34px 36px 36px; border-radius: 26px; background: #fff; box-shadow: var(--shadow); text-align: left; margin-top: 56px; }
+  .conn .t { font: 700 28px/1 var(--font-ui); }
+  .conn .fl { font: 500 25px/1 var(--font-ui); margin-top: 30px; }
+  .field { margin-top: 14px; height: 64px; border-radius: 14px; border: 1.5px solid #dcdad3; display: flex; align-items: center; padding: 0 20px; font: 500 30px/1 var(--font-ui); letter-spacing: 0.12em; color: var(--ink); }
+  .note { display: inline-block; font: 400 25px/1.3 var(--font-ui); color: var(--ink-2); margin-top: 18px; padding: 8px 12px; margin-left: -12px; border-radius: 10px; background: var(--gold-tint); }
+  .btn { display: inline-block; margin-top: 24px; padding: 16px 30px; border-radius: 14px; background: #ebebeb; font: 500 26px/1 var(--font-ui); }
+  .typing::after { content: ""; display: inline-block; width: 2px; height: 1em; background: currentColor; margin-left: 3px; vertical-align: -0.1em; }
+
+  /* ---------- close ---------- */
+  .icon-tile { width: 168px; height: 168px; border-radius: 38px; background: var(--gold); display: flex; align-items: center; justify-content: center; box-shadow: 0 24px 60px -20px rgba(224,172,0,.6); }
+  .icon-tile svg { width: 108px; height: 104px; }
+  .name { font-family: var(--font-display); font-weight: 500; font-variation-settings: "opsz" 144, "SOFT" 50; font-size: 56px; letter-spacing: -0.02em; margin-top: 30px; }
+  .tag { margin-top: 26px; }
+  .url { margin-top: 52px; display: inline-block; padding: 22px 40px; border-radius: 999px; background: var(--ink); color: var(--bg); font: 600 32px/1 var(--font-ui); letter-spacing: 0.01em; }
+
+  /* ---------- cursor ---------- */
+  .cursor { position: absolute; left: 0; top: 0; width: 40px; height: 40px; pointer-events: none; z-index: 10; }
+  .cursor svg { display: block; filter: drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
+</style>
+</head>
+<body>
+<div data-stage>
+  <div class="blob"></div>
+
+  <!-- 1. Hook: the pain. No product. -->
+  <section data-scene="hook">
+    <div class="cam">
+      <div class="center">
+        <div class="tiles">
+          <div class="tile t1"><img src="assets/sample/openrouter.png" alt=""><div class="meter"><i style="width:78%"></i></div></div>
+          <div class="tile t2"><img src="assets/sample/apollo.png" alt=""><div class="meter"><i style="width:55%"></i></div></div>
+          <div class="tile t3 hunter"><img src="assets/sample/hunter.png" alt=""><div class="meter"><i></i></div></div>
+          <div class="tile t4"><img src="assets/sample/prospeo.png" alt=""><div class="meter"><i style="width:45%"></i></div></div>
+          <div class="tile t5"><img src="assets/sample/tavily.png" alt=""><div class="meter"><i style="width:66%"></i></div></div>
+        </div>
+        <div class="h1" data-words>One of your API tools<br>is about to <span class="hl">run dry.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Shift: the bird in the menu bar turns red; the notification lands. -->
+  <section data-scene="shift">
+    <div class="cam">
+      <div class="slab">
+        <div class="menubar" data-chrome>
+          <span style="font-weight:700">Finder</span><span>File</span><span>Edit</span><span>View</span>
+          <span class="grow"></span>
+          <svg class="mb-ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="#1a1a1a" stroke-width="2.2"/><path d="M16 16l4.5 4.5" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <svg class="mb-ico" viewBox="0 0 24 24"><path d="M2.5 9.5a14 14 0 0 1 19 0M5.5 12.8a9.5 9.5 0 0 1 13 0M8.6 16a5 5 0 0 1 6.8 0" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="19.4" r="1.7" fill="#1a1a1a"/></svg>
+          <div class="bird">
+            <svg class="ink" viewBox="0 0 100 96"><path fill="#1a1a1a" fill-rule="evenodd" d="M83.087 62.984 94 73 74.284 76.284A40 40 0 1 1 83.087 62.984ZM66.4 48a20.4 20.4 0 1 0-40.8 0 20.4 20.4 0 1 0 40.8 0Z"/></svg>
+            <svg class="red" viewBox="0 0 100 96"><path fill="#ff3b30" fill-rule="evenodd" d="M83.087 62.984 94 73 74.284 76.284A40 40 0 1 1 83.087 62.984ZM66.4 48a20.4 20.4 0 1 0-40.8 0 20.4 20.4 0 1 0 40.8 0Z"/></svg>
+            <div class="badge">!</div>
+          </div>
+          <span style="width:8px"></span>
+          <span>9:41</span>
+        </div>
+        <div class="notif">
+          <div class="appicon"><svg viewBox="0 0 100 96"><path fill="#1a1a1a" fill-rule="evenodd" d="M83.087 62.984 94 73 74.284 76.284A40 40 0 1 1 83.087 62.984ZM66.4 48a20.4 20.4 0 1 0-40.8 0 20.4 20.4 0 1 0 40.8 0Z"/></svg></div>
+          <div><b>Hunter</b><span>Searches critical: 250 of 10,000 left</span></div>
+        </div>
+      </div>
+      <div class="shift-h"><div class="h2" data-words>QuotaCanary warns you,<br>right in the menu bar.</div></div>
+    </div>
+  </section>
+
+  <!-- 3. Proof 1: the panel. Every balance at a glance. -->
+  <section data-scene="proof-1">
+    <div class="cam">
+      <div class="stack">
+        <div class="h2" data-words>Every balance at a glance.</div>
+        <div class="panel" data-card>
+          <div class="p-head">
+            <svg viewBox="0 0 100 96"><path fill="#ffc400" fill-rule="evenodd" d="M83.087 62.984 94 73 74.284 76.284A40 40 0 1 1 83.087 62.984ZM66.4 48a20.4 20.4 0 1 0-40.8 0 20.4 20.4 0 1 0 40.8 0Z"/></svg>
+            <span>QuotaCanary</span><span class="grow"></span><small data-chrome>Checked just now</small>
+          </div>
+          <div class="p-sec">Needs attention</div>
+          <div class="p-row row-hunter"><div class="row-sel"></div>
+            <svg class="glyph" viewBox="0 0 24 24"><path d="M12 2.5 22.5 21h-21z" fill="#ff3b30" stroke="#ff3b30" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 9v5.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.4" fill="#fff"/></svg>
+            <img src="assets/sample/hunter.png" alt=""><span>Hunter</span><span class="pool">Searches</span><span class="grow"></span><span class="amt">250 / 10,000</span></div>
+          <div class="p-row row-apollo">
+            <svg class="glyph" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#ffc400"/></svg>
+            <img src="assets/sample/apollo.png" alt=""><span>Apollo</span><span class="pool">Lead Credits</span><span class="grow"></span><span class="amt">1,000 / 10,000</span></div>
+          <div class="p-div"></div>
+          <div class="p-sec">Healthy</div>
+          <div class="p-row">
+            <svg class="glyph" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#34c759"/><path d="M7.5 12.3l3 3 6-6.2" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <img src="assets/sample/openrouter.png" alt=""><span>OpenRouter</span><span class="pool">Credits</span><span class="grow"></span><span class="amt">$45.00</span></div>
+          <div class="p-row">
+            <svg class="glyph" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#34c759"/><path d="M7.5 12.3l3 3 6-6.2" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <img src="assets/sample/tavily.png" alt=""><span>Tavily</span><span class="pool">Plan Credits</span><span class="grow"></span><span class="amt">914 / 10,000</span></div>
+        </div>
+      </div>
+      <div class="cursor"><svg viewBox="0 0 24 24" width="40" height="40"><path d="M4 2l16 9-7 2-3 7z" fill="#111" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+    </div>
+  </section>
+
+  <!-- 4. Proof 2: the run-out estimate. -->
+  <section data-scene="proof-2">
+    <div class="cam">
+      <div class="stack">
+        <div class="h2" data-words>And roughly when it runs out.</div>
+        <div class="insp" data-card>
+          <div class="insp-top"><img src="assets/sample/hunter.png" alt=""><span>Hunter</span></div>
+          <div class="lbl">Searches</div>
+          <div class="big">250 of 10,000</div>
+          <div class="bar"><i></i></div>
+          <svg class="spark" viewBox="0 0 796 130" preserveAspectRatio="none">
+            <path d="M0 8 L796 112 L796 130 L0 130 Z" fill="#fde2e0"/>
+            <path d="M0 8 L796 112" fill="none" stroke="#ff3b30" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+          <div class="eta">Empties in ~2 days.</div>
+          <div class="burn">Burning ~125/day · Last 7 days</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Proof 3: local by default. -->
+  <section data-scene="proof-3">
+    <div class="cam">
+      <div class="stack">
+        <div class="h2" data-words>No account needed.</div>
+        <div class="conn" data-card>
+          <div class="t">Connect Hunter</div>
+          <div class="fl">Hunter API key</div>
+          <div class="field"><span class="key" data-text="••••••••••••••••••••">••••••••••••••••••••</span></div>
+          <div class="note">Stored in your Mac's Keychain. Sent only to Hunter.</div>
+          <div><span class="btn">Connect</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Close: icon, name, the approved tagline, the URL. -->
+  <section data-scene="close">
+    <div class="center">
+      <div class="icon-tile"><svg viewBox="0 0 100 96"><path fill="#1a1a1a" fill-rule="evenodd" d="M83.087 62.984 94 73 74.284 76.284A40 40 0 1 1 83.087 62.984ZM66.4 48a20.4 20.4 0 1 0-40.8 0 20.4 20.4 0 1 0 40.8 0Z"/></svg></div>
+      <div class="name">QuotaCanary</div>
+      <div class="h2 tag" data-words>the bird that <span class="hl">sings</span><br>before the credits die</div>
+      <div class="url">quotacanary.com</div>
+    </div>
+  </section>
+
+</div>
+
+<script src="./motion.js"></script>
+<script>
+defineVideo({
+  width: 1920, height: 1080, fps: 30,
+  global: {
+    ".blob": [{ at: 0, x: -60, y: 0 }, { at: 25.5, x: 120, y: 60, ease: "linear" }],
+  },
+  scenes: [
+    {
+      id: "hook", dur: 3.5,
+      camera: [{ at: 0, scale: 1 }, { at: 3.5, scale: 1.05, ease: "linear" }],
+      tracks: {
+        ".tile": { stagger: 0.06, at: 0.0, dur: 0.6, from: { opacity: 0, y: 40, scale: 0.94 }, to: { opacity: 1, y: 0, scale: 1 }, ease: "springSoft" },
+        ".hunter .meter i": [{ at: 0.5, w: 92, bg: "#8f8d86" }, { at: 1.6, bg: "#8f8d86" }, { at: 2.0, bg: "#ff3b30", ease: "outCubic" }, { at: 2.2, w: 5, ease: "inOutCubic" }],
+        ".h1 .w": { stagger: 0.06, at: 0.3, dur: 0.6, from: { opacity: 0, y: 34, blur: 4 }, to: { opacity: 1, y: 0, blur: 0 }, ease: "outQuint" },
+        ".hl": [{ at: 1.5, progress: 0 }, { at: 2.0, progress: 1, ease: "outCubic" }],
+      },
+    },
+    {
+      id: "shift", dur: 4.5, transition: { type: "push", dur: 0.6 },
+      camera: [{ at: 0, scale: 1 }, { at: 1.9, scale: 1.03, ease: "inOutCubic" }, { at: 2.7, scale: 1.2, target: ".bird", ease: "inOutQuint" }],
+      tracks: {
+        ".slab": [{ at: -0.1, opacity: 0, y: 30 }, { at: 0.6, opacity: 1, y: 0, ease: "springSoft" }],
+        ".h2 .w": { stagger: 0.06, at: 0.2, dur: 0.6, from: { opacity: 0, y: 26 }, to: { opacity: 1, y: 0 }, ease: "outQuint" },
+        ".bird .red": [{ at: 1.2, opacity: 0 }, { at: 1.3, opacity: 1, ease: "outCubic" }],
+        ".bird .ink": [{ at: 1.2, opacity: 1 }, { at: 1.3, opacity: 0, ease: "outCubic" }],
+        ".bird": [{ at: 1.2, scale: 1 }, { at: 1.35, scale: 1.35, ease: "outCubic" }, { at: 1.7, scale: 1, ease: "spring" }],
+        ".bird .badge": [{ at: 1.25, opacity: 0, scale: 0.3 }, { at: 1.55, opacity: 1, scale: 1, ease: "spring" }],
+        ".notif": [{ at: 1.8, opacity: 0, x: 80 }, { at: 2.4, opacity: 1, x: 0, ease: "outQuint" }],
+      },
+    },
+    {
+      id: "proof-1", dur: 5, transition: { type: "zoom", dur: 0.6 },
+      camera: [{ at: 0, scale: 1 }, { at: 2.9, scale: 1.03, ease: "inOutCubic" }, { at: 3.7, scale: 1.16, target: ".row-hunter", ease: "inOutQuint" }],
+      tracks: {
+        ".h2 .w": { stagger: 0.06, at: 0.0, dur: 0.6, from: { opacity: 0, y: 26 }, to: { opacity: 1, y: 0 }, ease: "outQuint" },
+        ".panel": [{ at: 0.1, opacity: 0, y: -24, scale: 0.97 }, { at: 0.8, opacity: 1, y: 0, scale: 1, ease: "springSoft" }],
+        ".p-row": { stagger: 0.12, at: 0.5, dur: 0.5, from: { opacity: 0, x: -20 }, to: { opacity: 1, x: 0 }, ease: "outQuint" },
+        ".cursor": [
+          { at: 1.6, opacity: 0, x: 1500, y: 980, scale: 1 },
+          { at: 1.9, opacity: 1, x: 1500, y: 980 },
+          { at: 2.8, target: ".row-hunter .amt", ease: "inOutQuint" },
+          { at: 2.9, scale: 1 }, { at: 3.0, scale: 0.82, ease: "outCubic" }, { at: 3.2, scale: 1, ease: "outCubic" },
+        ],
+        ".row-sel": [{ at: 3.0, opacity: 0 }, { at: 3.1, opacity: 1, ease: "outCubic" }],
+      },
+    },
+    {
+      id: "proof-2", dur: 5, transition: { type: "push", dur: 0.6 },
+      camera: [{ at: 0, scale: 1 }, { at: 2.2, scale: 1.03, ease: "inOutCubic" }, { at: 3.0, scale: 1.15, x: -150, y: 130, ease: "inOutQuint" }],
+      tracks: {
+        ".h2 .w": { stagger: 0.06, at: 0.0, dur: 0.6, from: { opacity: 0, y: 26 }, to: { opacity: 1, y: 0 }, ease: "outQuint" },
+        ".h2": [{ at: 2.3, opacity: 1 }, { at: 2.8, opacity: 0, ease: "inCubic" }],
+        ".insp": [{ at: 0, opacity: 0, y: 40 }, { at: 0.7, opacity: 1, y: 0, ease: "springSoft" }],
+        ".bar i": [{ at: 0.5, w: 796 }, { at: 1.4, w: 20, ease: "inOutCubic" }],
+        ".big": [{ at: 1.3, opacity: 0, y: 12 }, { at: 1.8, opacity: 1, y: 0, ease: "outQuint" }],
+        ".spark": [{ at: 1.2, clip: [0, 100, 0, 0] }, { at: 2.0, clip: [0, 0, 0, 0], ease: "inOutCubic" }],
+        ".eta": [{ at: 1.9, opacity: 0, y: 14 }, { at: 2.4, opacity: 1, y: 0, ease: "outQuint" }],
+        ".burn": [{ at: 2.1, opacity: 0 }, { at: 2.6, opacity: 1, ease: "outQuint" }],
+      },
+    },
+    {
+      id: "proof-3", dur: 3, transition: { type: "push", dur: 0.5 },
+      camera: [{ at: 0, scale: 1 }, { at: 2.5, scale: 1.08, target: ".note", ease: "inOutCubic" }],
+      tracks: {
+        ".h2 .w": { stagger: 0.06, at: 0.0, dur: 0.6, from: { opacity: 0, y: 26 }, to: { opacity: 1, y: 0 }, ease: "outQuint" },
+        ".conn": [{ at: 0, opacity: 0, y: 40 }, { at: 0.6, opacity: 1, y: 0, ease: "springSoft" }],
+        ".key": [{ at: 0.4, typed: 0 }, { at: 1.0, typed: 1, ease: "linear" }],
+        ".note": [{ at: 0.9, opacity: 0, y: 10 }, { at: 1.4, opacity: 1, y: 0, ease: "outQuint" }],
+      },
+    },
+    {
+      id: "close", dur: 4.5, transition: { type: "fade", dur: 0.5 },
+      tracks: {
+        ".icon-tile": [{ at: 0, opacity: 0, scale: 0.85 }, { at: 0.7, opacity: 1, scale: 1, ease: "spring" }],
+        ".name": [{ at: 0.2, opacity: 0, y: 16 }, { at: 0.8, opacity: 1, y: 0, ease: "outQuint" }],
+        ".tag .w": { stagger: 0.07, at: 0.5, dur: 0.6, from: { opacity: 0, y: 24 }, to: { opacity: 1, y: 0 }, ease: "outQuint" },
+        ".hl": [{ at: 1.3, progress: 0 }, { at: 1.8, progress: 1, ease: "outCubic" }],
+        ".url": [{ at: 1.3, opacity: 0, y: 20 }, { at: 1.9, opacity: 1, y: 0, ease: "outQuint" }],
+      },
+    },
+  ],
+});
+</script>
+</body>
+</html>

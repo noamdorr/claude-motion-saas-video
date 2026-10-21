@@ -30,7 +30,11 @@ defineVideo({
   the `dur` seconds before this scene's `start`: the previous scene leaves during
   `[start - dur, start]` and this one enters in the same window, so on the grid line the new
   scene is fully in. Plan the outgoing scene's last hold to end `dur` before its end. An optional
-  `ease` (any easing name) shapes the window; `fade` is a symmetric cross-fade by default. Types: `cut` (default), `fade`, `push` (incoming rises, outgoing drifts up
+  `ease` (any easing name) shapes the window; `fade` is a symmetric cross-fade by default. The
+  incoming scene is transparent during the window (push and zoom fade it in), so a static
+  backdrop or scrim in the incoming scene still arrives smoothly; `slide` and `wipe` are opaque by
+  design. The outgoing scene is fading during the window, so a camera move timed into the cut
+  must start before the window to be seen. Types: `cut` (default), `fade`, `push` (incoming rises, outgoing drifts up
   and fades), `zoom` (outgoing flies into the lens, incoming settles from behind: the Z-axis
   push-through), `slide` (whip to the next panel), `wipe` (clip reveal from the left).
 - Times inside `tracks` and `camera` are scene-local seconds, so retiming a scene never breaks it.
@@ -96,7 +100,10 @@ pixels relative to center; `scale` is the zoom. A keyframe may say `target: ".se
 (`|x| <= W/2 * (1 - 1/scale)`, same for `y`), so a crop never shows bare canvas past the edge; set
 `cameraClamp: false` on the scene to allow it. A hero crop on something near an edge therefore
 cannot center it; put the object nearer the middle of the stage instead (see ui-cards.md on
-menu bars). Cursors inside `.cam` move with the camera, and `target` coordinates still land
+menu bars). The same applies vertically: with a headline above a card, a crop on the card's
+lower half leaves the headline cut through at the top edge, so fade the headline out just before
+the crop. A control in a side column sits off-center in a crop; that is fine, or lay the card out
+with the control in the middle third. Cursors inside `.cam` move with the camera, and `target` coordinates still land
 because both are measured in the same space.
 
 ## Markup helpers
@@ -105,6 +112,8 @@ because both are measured in the same space.
   Nested elements survive: `<span class="accent">first</span>` inside a `data-words` headline
   keeps its class and gets a `.w` inside it. `data-chars` does the same per character
   (`<span class="c">`).
+- `data-swap` on a replacement state ("Copied" next to "Copy prompt", the real name next to the
+  anonymous one) excludes it from the copy budget, since both are never on screen together.
 - `data-chrome` on furniture (a fake menu bar, a window title, an OS clock) excludes its words
   from the copy budget in `check-copy.mjs`. Copy the viewer is meant to read is never chrome.
 - `data-stage` marks the stage element (one per file). Its size is set from `defineVideo`.

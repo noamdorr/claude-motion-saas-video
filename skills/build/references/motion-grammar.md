@@ -15,7 +15,9 @@ For 20 to 30 seconds, five beats. Each beat is one scene, one idea, one line of 
 | Proof 2 (and 3) | 14 to 22 | The next capability. Change the camera, not the layout language. | headline + card words |
 | Close | 22 to 28 | Logo, the promise in six words, the URL. Hold at least two seconds. | promise + URL |
 
-Quick demos (10 to 15 seconds) drop to Hook, Proof, Close. Feature announcements open on the
+The beats are a default, not a cage: when the product's first proof IS the moment it arrives (an
+alert-first tool, a one-click action), fold Proof 1 into the Shift and give a later proof its own
+short beat. Quick demos (10 to 15 seconds) drop to Hook, Proof, Close. Feature announcements open on the
 feature's screen (Shift first), then one Proof, then Close.
 
 The hook is where most launch videos die. Lead with what the viewer already feels ("Your buyers are
@@ -64,11 +66,18 @@ on grid lines. The viewer cannot name this, but feels it as "smooth".
 Slides pan. Films move in and out. Every proof scene gets a camera track:
 
 - Push in slowly through the whole scene (`scale` 1 to 1.06 over the scene) so nothing is static.
-- Hero crop: when the cursor clicks or the number lands, push to 1.15 to 1.25 on that element over
-  0.8s with `inOutQuint`, then hold. Pull back out only if the next idea needs the whole card.
+- Hero crop: when the cursor clicks or the number lands, push onto that element over 0.8s with
+  `inOutQuint`, then hold. The scale follows from the element, not a fixed number: the thing you
+  crop to should fill about two thirds of the frame's width, which is 1.15 for a wide card and
+  1.6 or more for one row of a list (dim the other rows while you are there). Fade the headline
+  out just before a crop that would cut it at the top edge. Pull back out only if the next idea
+  needs the whole card.
 - Pull-out reveal: start at 1.3 on one row, pull to 1.0 to reveal the list. Good for "and here is
   everything it found".
-- Scene transitions on the Z axis (`zoom`) make the outgoing scene fly into the lens. Use it once.
+- Scene transitions on the Z axis (`zoom`) make the outgoing scene fly into the lens: it scales to
+  1.7 and blurs while the incoming scene appears only in the second half of the window. Give the
+  incoming scene an opaque background so the flight reads as a push-through, not a double
+  exposure, and start any camera push of the outgoing scene before the window. Use it once.
   The Shift (the product arrives) is the usual place; if your signature move is a push-through
   somewhere else, the signature wins and the Shift takes a `push`. "Once" is the rule, not "on
   the Shift".

@@ -54,7 +54,7 @@ exactly that. The levers, in order of impact:
 
 ```
 .claude-plugin/plugin.json, marketplace.json   plugin and self-hosted marketplace manifests
-skills/build/      the engine: SKILL.md, references/, scripts/scaffold.mjs, assets/project-template/
+skills/build/      the engine: SKILL.md, references/, scripts/scaffold.mjs + selftest.mjs, assets/project-template/
 skills/lucky/      autonomous mode
 skills/grill/      interview mode
 skills/edit/       change one thing in an existing video
@@ -64,3 +64,13 @@ docs/              this file, the morning handoff, eval notes
 
 The project template is copied into the user's repo (`motion-video/` by default) so renders keep
 working after the plugin updates and the video can be committed like any other source.
+
+## Test loop
+
+`evals/` holds the eval prompts (`evals.json`), the programmatic grader (`grade.mjs`: MP4 present,
+duration, resolution, no em dash, words per second, forbidden words, determinism, the seek contract,
+brief and storyboard present) and a trigger-eval query set for description tuning. The workspace
+`../claude-motion-saas-video-workspace/iteration-N/` follows the skill-creator layout; each
+iteration re-runs both productions from scratch with the current skill and the agents' own
+"skill feedback" sections drive the next edit. `skills/build/scripts/selftest.mjs <video-folder>`
+is the runtime regression check (scenes render, camera finite, transitions overlap).

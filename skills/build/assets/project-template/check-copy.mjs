@@ -9,7 +9,9 @@
  * build step can gate on it. Warnings do not fail.
  *
  * Counting rules: everything inside [data-stage] counts except elements marked data-chrome
- * (menu bars, window titles, fake OS clocks) which are furniture, not copy. The duration comes
+ * (menu bars, window titles, fake OS clocks) which are furniture, not copy, and elements marked
+ * data-swap (a replacement state such as "Copied" or "Unlocked" that is never on screen together
+ * with the text it replaces). The duration comes
  * from the defineVideo({...}) literal: a top-level `duration`, else the last scene's `end`, else
  * the sum of scene-level `dur` values (nested tween durs are ignored).
  */
@@ -58,7 +60,7 @@ const words = (t) => (t ? t.split(" ").filter((w) => /[A-Za-z0-9]/.test(w)).leng
 // ---------- the stage, minus chrome ----------
 const stageStart = html.search(/<[a-zA-Z0-9-]+[^>]*\sdata-stage/);
 const stageHtml = stageStart >= 0 ? html.slice(stageStart, elementEnd(html, stageStart)) : html;
-const copyHtml = removeElements(stageHtml, "data-chrome");
+const copyHtml = removeElements(removeElements(stageHtml, "data-chrome"), "data-swap");
 const text = textOf(copyHtml);
 
 // 1. Punctuation and phrasing tells.

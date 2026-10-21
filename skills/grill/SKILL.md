@@ -102,7 +102,9 @@ anchor rhythm, type and camera.
 
 Ask:
 
-1. Two or three links to videos they love. Any product, not only software: a car ad, a phone
+1. Two or three links to videos they love. If the repo already holds breakdowns or earlier films,
+   list what you found and ask which ones they mean rather than assuming ("I found breakdowns of
+   A and B and your April film; which two?"). Any product, not only software: a car ad, a phone
    launch, a title sequence. One line per link on what they love in it.
 2. The one they hate, and why. A clear "not this" often carries more signal than three "like this".
 3. Three adjectives for how the film should feel (default from the brand: for example "calm,
@@ -113,9 +115,10 @@ Then analyse the links with this fallback chain, in order:
 
 1. A breakdown that already exists in the repo (a `REFERENCE_*.md`, a retro, a handoff with a
    shot list). The founder's own notes on a film beat any fresh analysis.
-2. Local source or frames of the reference (the film's own project folder, a rendered MP4 you can
-   sample with ffmpeg, a contact sheet). Read the frames; you can describe type, color, framing
-   and the signature move from them.
+2. Local source or frames of the reference (the film's own project folder, its timing constants
+   and easing files, a rendered MP4 you can sample with ffmpeg, a contact sheet). Read the frames
+   and the source; you can describe type, color, framing, scene starts and the signature move
+   from them.
 3. A `gemini` CLI on the PATH or `GEMINI_API_KEY` in the environment: run the director's
    breakdown prompt from `references/interview.md` on each link. You get a shot list, pacing,
    transitions, type, color, and the one signature move. Skip this step when the session forbids
@@ -178,7 +181,8 @@ exactly what a founder reacts to, and they only show up in motion. Open both fil
 rather than only linking them (in an unattended run, skip the open and put the paths first).
 
 Ask one question: "Is this the feel? Yes, or what is off (faster, calmer, bigger type, different
-move)?" Map vague answers back to the grammar table: "too slow" means shorter holds and faster
+move)?" A small tweak inside an approved feel (a longer hold, a word) does not need a second
+checkpoint; apply it and move on. A change of feel does. Map vague answers back to the grammar table: "too slow" means shorter holds and faster
 entrances, not more effects.
 
 ## Step 7: full build

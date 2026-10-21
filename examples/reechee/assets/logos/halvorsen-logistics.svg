@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Halvorsen Logistics">
+  <path fill="none" stroke="#5B2D73" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5.5 5.5v13m13-13v13M5.5 12h13"/>
+  <circle cx="5.5" cy="5.5" r="2.25" fill="#E74483"/>
+  <circle cx="18.5" cy="18.5" r="2.25" fill="#F29BBE"/>
+</svg>

@@ -26,11 +26,11 @@ Two videos were built on the first night with this plugin, one through each mode
 
 | product | mode | video |
 | --- | --- | --- |
-| Reechee, the new lead-first app (web) | grill | `examples/reechee/out/reechee-launch.mp4` |
-| QuotaCanary for Mac (menu bar app) | lucky | `examples/quotacanary/out/quotacanary-mac.mp4` |
+| Reechee, the new lead-first app (web) | grill | `examples/reechee/out/reechee-launch.mp4` (25s) |
+| QuotaCanary for Mac (menu bar app) | lucky | `examples/quotacanary/out/quotacanary-mac-launch.mp4` (25.5s) |
 
-Each example folder holds its `brief.md`, `storyboard.md` and `video.html`, so you can read how a
-storyboard turns into scenes.
+Each example folder holds its `brief.md`, `storyboard.md` and `video.html` (and, for the grill one,
+the interview transcript), so you can read how a brief turns into a storyboard and scenes.
 
 ## Install
 
@@ -82,7 +82,7 @@ The project template that lands in your repo (`motion-video/` by default):
 motion-video/
   video.html      the whole film: HTML, CSS, and a defineVideo({...}) block
   motion.js       the runtime (400 lines, no dependencies): scenes, tracks, camera, cursor targets
-  render.mjs      MP4, stills and 12-frame contact sheets via headless Chromium + ffmpeg
+  render.mjs      MP4, stills, contact sheets and a jerk check via headless Chromium + ffmpeg
   check-copy.mjs  fails on em dashes and over-budget copy, warns on filler and non-determinism
   preview.mjs     local server for the scrubbable player
   brief.md, storyboard.md, assets/, out/

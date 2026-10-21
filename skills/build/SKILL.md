@@ -51,7 +51,8 @@ show it to them in one message before building.
    `node bundle.mjs` writes `out/video.bundle.html`, one file with the runtime and images inlined,
    which pastes into claude.ai as an artifact (and opens in Claude Motion's editor on plans that
    have it) and feeds the community Stage exporters.
-   Open the MP4 for the user when you can (`open out/<name>.mp4` on macOS). Commit the folder.
+   Open the MP4 for the user when you can (`open out/<name>.mp4` on macOS); in an unattended run
+   skip the open and put the paths and the sheet first. Commit the folder.
 
 ## Non-negotiables
 

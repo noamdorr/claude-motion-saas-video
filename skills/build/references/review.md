@@ -50,10 +50,10 @@ the handoff say plainly that stills and the sheet were checked and the motion wa
 
 "Smooth" is checkable. `node render.mjs --jumps out/video.mp4` lists every frame whose scene-change
 score is above 0.06 (ffmpeg's measure of how much the picture changed from the previous frame).
-Your intended cuts appear there and should be the only entries. Anything else is a pop, an
-element landing late, or a transition that does not overlap; find its time, render the still on
-both sides, and fix the keyframe. Report the result in the handoff as "N jumps, all at scene
-cuts" or name the stray one.
+Hard cuts appear there; overlapping transitions usually do not, and a tiny intended pop (a
+badge, an icon) is too small to register. Anything else is a pop, an element landing late, or a
+transition that does not overlap; find its time, render the still on both sides, and fix the
+keyframe. Report the result as "no jumps" or "N jumps, all at hard cuts", or name the stray one.
 
 ## What "done" looks like
 

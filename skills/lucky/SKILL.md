@@ -86,6 +86,7 @@ Defaults when nothing is found:
 - Canvas off-white (`#F7F6F2` or a light tint of the brand), ink from the product's text color.
 - UI font Inter. Display font, in order: the brand's declared display face (brand docs, the
   wordmark, an earlier approved film), then the site's heading font, then Bricolage Grotesque.
+  When the live site's headings disagree with the brand face, the brand face still wins; log it.
 - The close: the founder's approved tagline if one exists, at its own length; otherwise a promise
   you write in six words or fewer.
 - The one idea: the homepage hero headline.

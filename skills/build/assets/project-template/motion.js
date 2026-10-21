@@ -176,13 +176,13 @@
     },
     // Incoming scene rises in while the outgoing scene drifts up and fades.
     push: {
-      in: (p, s) => ({ opacity: 1, y: (1 - EASE.outQuint(p)) * s.height * 0.12 }),
+      in: (p, s) => ({ opacity: EASE.outCubic(Math.min(1, p / 0.4)), y: (1 - EASE.outQuint(p)) * s.height * 0.12 }),
       out: (p, s) => ({ opacity: 1 - EASE.inCubic(p), y: -EASE.inCubic(p) * s.height * 0.08 }),
     },
     // Z-axis push-through: the outgoing scene flies into the camera, the incoming settles from behind.
     zoom: {
-      in: (p) => ({ opacity: EASE.outCubic(Math.min(1, p * 1.6)), scale: lerp(0.92, 1, EASE.outQuint(p)) }),
-      out: (p) => ({ opacity: 1 - EASE.inCubic(p), scale: lerp(1, 1.5, EASE.inCubic(p)) }),
+      in: (p) => ({ opacity: p < 0.35 ? 0 : EASE.outCubic((p - 0.35) / 0.65), scale: lerp(0.9, 1, EASE.outQuint(p)) }),
+      out: (p) => ({ opacity: 1 - EASE.inQuad(p), scale: lerp(1, 1.7, EASE.inOutCubic(p)), blur: EASE.inQuad(p) * 6 }),
     },
     // Horizontal slide: whip-pan feel for "same world, next panel".
     slide: {
@@ -334,9 +334,9 @@
       }
     }
     // Camera keyframes: { at, target: ".sel", scale } looks at the element's center.
-    for (const sc of camScenes) {
-      const root = video.sceneEls.get(sc.id);
-      for (const k of sc._camera) {
+    for (const cs of camScenes) {
+      const root = video.sceneEls.get(cs.id);
+      for (const k of cs._camera) {
         if (!k.target) continue;
         const tgt = root.querySelector(k.target);
         if (!tgt) { console.warn("[motion] camera target not found", k.target); continue; }
@@ -404,6 +404,7 @@
           const mx = (video.width / 2) * (1 - 1 / cam.scale), my = (video.height / 2) * (1 - 1 / cam.scale);
           cam.x = Math.max(-mx, Math.min(mx, cam.x)); cam.y = Math.max(-my, Math.min(my, cam.y));
         }
+        if (!Number.isFinite(cam.x) || !Number.isFinite(cam.y) || !Number.isFinite(cam.scale)) { console.warn("[motion] camera value is not a number in scene", s.id, cam); cam.x = cam.x || 0; cam.y = cam.y || 0; cam.scale = cam.scale || 1; }
         s._camEl.style.transformOrigin = "50% 50%";
         s._camEl.style.transform = `scale(${cam.scale}) translate(${-cam.x}px, ${-cam.y}px)`;
       }
